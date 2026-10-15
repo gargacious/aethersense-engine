@@ -64,6 +64,10 @@ Config Config::from_json(const json &j) {
                           "cfar_training", "cfar_guard", "confirmation_hits", "coast_frames"}) {
     if (j.contains(key) && !j.at(key).is_number_integer())
       throw std::invalid_argument(std::string(key) + " must be an integer");
+    if (j.contains(key) && std::string_view(key) != "seed" &&
+        (j.at(key).get<double>() < std::numeric_limits<int>::min() ||
+         j.at(key).get<double>() > std::numeric_limits<int>::max()))
+      throw std::invalid_argument(std::string(key) + " exceeds signed integer range");
   }
   if (j.contains("seed") &&
       (j.at("seed").get<double>() < 0 || j.at("seed").get<double>() > 4294967295.))
@@ -246,6 +250,8 @@ SignalResult process_iq(const RawBlock &b, const Config &c) {
     throw std::invalid_argument("Raw dimensions differ from immutable config");
   int n = b.samples_per_chirp, m = b.chirps;
   SignalResult r;
+  r.sample_rate_hz = b.sample_rate_hz;
+  r.chirp_period_s = b.chirp_period_s;
   r.bins = n;
   r.chirps = m;
   r.range_bin_m = 299792458. * b.sample_rate_hz / (2 * b.slope_hz_s * n);
@@ -317,7 +323,8 @@ json SignalResult::to_json() const {
           {"chirps", chirps},
           {"range_bin_m", range_bin_m},
           {"velocity_bin_mps", velocity_bin_mps},
-          {"sample_rate_hz", 1e6},
+          {"sample_rate_hz", sample_rate_hz},
+          {"chirp_period_s", chirp_period_s},
           {"i", i},
           {"q", q},
           {"spectrum", spectrum},

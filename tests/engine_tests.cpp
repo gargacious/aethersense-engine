@@ -22,6 +22,9 @@ int main() {
     Config c;
     c.validate();
     rejects([&] { Config::from_json({{"seed", -1}}); });
+    for (const auto *key : {"objects", "schema_version", "fft_size", "chirps", "cfar_training",
+                            "cfar_guard", "confirmation_hits", "coast_frames"})
+      rejects([&] { Config::from_json({{key, 4294967297ULL}}); });
     rejects([&] { Config::from_json({{"objects", 1.5}}); });
     rejects([&] { Config::from_json({{"surprise", 1}}); });
     rejects([&] {
@@ -71,6 +74,10 @@ int main() {
     for (auto &d : result.detections)
       best = std::min(best, std::abs(d.range_m - expected));
     check(best < result.range_bin_m, "Range reconstruction > one bin");
+    auto different_rate = raw;
+    different_rate.sample_rate_hz = 500000;
+    auto different_signal = process_iq(different_rate, c).to_json();
+    check(different_signal["sample_rate_hz"] == 500000, "Signal metadata lost raw sample rate");
     auto bad = raw;
     bad.iq.pop_back();
     rejects([&] { bad.validate(); });

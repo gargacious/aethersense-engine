@@ -55,7 +55,7 @@ struct RawBlock {
 };
 struct SignalResult {
   int bins{}, chirps{};
-  double range_bin_m{}, velocity_bin_mps{};
+  double range_bin_m{}, velocity_bin_mps{}, sample_rate_hz{}, chirp_period_s{};
   std::vector<double> i, q, spectrum, phase, range_profile, threshold, range_doppler;
   std::vector<Detection> detections;
   json to_json() const;

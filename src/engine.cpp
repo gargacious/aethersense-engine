@@ -108,6 +108,11 @@ json serialize_scenario(const ScenarioOverrides &value) {
 }
 } // namespace
 void Config::validate() const {
+  if (source_options) {
+    source_options->validate();
+    if (executor != "staged_threads")
+      throw std::invalid_argument("Independently paced source requires staged_threads");
+  }
   if (executor != "single_thread" && executor != "staged_threads")
     throw std::invalid_argument("Executor must be single_thread or staged_threads");
   if (queue_capacity < 1 || queue_capacity > 64)
@@ -212,6 +217,7 @@ json Config::to_json() const {
   if (recording_options)
     result["recording_options"] = {{"schema_version",recording_options->version},
       {"mode",recording_options->mode},{"queue_capacity",recording_options->queue_capacity}};
+  if (source_options) result["source_options"] = source_options->to_json();
   return result;
 }
 Config Config::from_json(const json &j) {
@@ -236,6 +242,7 @@ Config Config::from_json(const json &j) {
   allowed["iq_processing"] = json::object();
   allowed["recording_options"] = json::object();
   allowed["tracking_diagnostics"] = json::object();
+  allowed["source_options"] = json::object();
   for (auto it = j.begin(); it != j.end(); ++it)
     if (!allowed.contains(it.key()))
       throw std::invalid_argument("Unknown configuration field: " + it.key());
@@ -276,6 +283,7 @@ Config Config::from_json(const json &j) {
     options.version=static_cast<int>(scenario_integer(d,"schema_version",1));
     c.tracking_diagnostics=options;
   }
+  if (j.contains("source_options")) c.source_options = SourceOptions::from_json(j.at("source_options"));
   if (j.contains("recording_options")) {
     const auto &r=j.at("recording_options");
     scenario_keys(r,{"schema_version","mode","queue_capacity"},{"schema_version","mode","queue_capacity"});

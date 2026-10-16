@@ -1,5 +1,6 @@
 #pragma once
 #include <aethersense/tracking_diagnostics.hpp>
+#include <aethersense/source_delivery.hpp>
 #include <array>
 #include <complex>
 #include <cstdint>
@@ -74,6 +75,7 @@ struct Config {
   std::optional<IQProcessingConfig> iq_processing;
   std::optional<RecordingOptions> recording_options;
   std::optional<TrackingDiagnosticsOptions> tracking_diagnostics;
+  std::optional<SourceOptions> source_options;
   void validate() const;
   json to_json() const;
   static Config from_json(const json &);

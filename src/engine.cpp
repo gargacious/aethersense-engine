@@ -5,6 +5,7 @@
 #include <limits>
 #include <numbers>
 #include <sstream>
+#include <set>
 #include <stdexcept>
 #include <tuple>
 
@@ -135,6 +136,17 @@ void Config::validate() const {
     throw std::invalid_argument("Invalid CA-CFAR cell sizes or Pfa (1e-6..0.1)");
   if (confirmation_hits < 1 || confirmation_hits > 20 || coast_frames < 0 || coast_frames > 100)
     throw std::invalid_argument("Invalid track lifecycle thresholds");
+  if (tracking_diagnostics && (tracking_diagnostics->version != 1 || !tracking_diagnostics->enabled))
+    throw std::invalid_argument("Tracking diagnostics require version1 and enabled true");
+  if (recording_options && (recording_options->version != 1 ||
+      recording_options->mode != "async_worker" || recording_options->queue_capacity < 1 ||
+      recording_options->queue_capacity > 8))
+    throw std::invalid_argument("Invalid recording options version/mode/capacity");
+  if (iq_processing) {
+    if (input != "synthetic_iq")
+      throw std::invalid_argument("IQ processing options require synthetic_iq");
+    iq_processing->validate(fft_size, chirps);
+  }
   if (scenario_overrides) {
     const auto &o = *scenario_overrides;
     if (o.version != 1 || input != "synthetic_detections")
@@ -193,6 +205,13 @@ json Config::to_json() const {
                  {"coast_frames", coast_frames}};
   if (scenario_overrides)
     result["scenario_overrides"] = serialize_scenario(*scenario_overrides);
+  if (iq_processing)
+    result["iq_processing"] = iq_processing->to_json();
+  if (tracking_diagnostics)
+    result["tracking_diagnostics"]={{"schema_version",tracking_diagnostics->version},{"enabled",tracking_diagnostics->enabled}};
+  if (recording_options)
+    result["recording_options"] = {{"schema_version",recording_options->version},
+      {"mode",recording_options->mode},{"queue_capacity",recording_options->queue_capacity}};
   return result;
 }
 Config Config::from_json(const json &j) {
@@ -214,6 +233,9 @@ Config Config::from_json(const json &j) {
     throw std::invalid_argument("Seed must be an unsigned 32-bit integer");
   auto allowed = c.to_json();
   allowed["scenario_overrides"] = json::object();
+  allowed["iq_processing"] = json::object();
+  allowed["recording_options"] = json::object();
+  allowed["tracking_diagnostics"] = json::object();
   for (auto it = j.begin(); it != j.end(); ++it)
     if (!allowed.contains(it.key()))
       throw std::invalid_argument("Unknown configuration field: " + it.key());
@@ -243,6 +265,26 @@ Config Config::from_json(const json &j) {
   FIELD(coast_frames);
   if (j.contains("scenario_overrides"))
     c.scenario_overrides = parse_scenario(j.at("scenario_overrides"));
+  if (j.contains("iq_processing"))
+    c.iq_processing = IQProcessingConfig::from_json(j.at("iq_processing"));
+  if (j.contains("tracking_diagnostics")) {
+    const auto &d=j.at("tracking_diagnostics");
+    scenario_keys(d,{"schema_version","enabled"},{"schema_version","enabled"});
+    if (!d.at("enabled").is_boolean() || d.at("enabled") != true)
+      throw std::invalid_argument("Tracking diagnostics enabled must be true");
+    TrackingDiagnosticsOptions options;
+    options.version=static_cast<int>(scenario_integer(d,"schema_version",1));
+    c.tracking_diagnostics=options;
+  }
+  if (j.contains("recording_options")) {
+    const auto &r=j.at("recording_options");
+    scenario_keys(r,{"schema_version","mode","queue_capacity"},{"schema_version","mode","queue_capacity"});
+    RecordingOptions o;
+    o.version=static_cast<int>(scenario_integer(r,"schema_version",1));
+    o.queue_capacity=static_cast<int>(scenario_integer(r,"queue_capacity",8));
+    if (!r.at("mode").is_string()) throw std::invalid_argument("Recording mode must be a string");
+    o.mode=r.at("mode").get<std::string>();c.recording_options=std::move(o);
+  }
 #undef FIELD
   c.validate();
   return c;
@@ -445,81 +487,8 @@ std::vector<double> ca_cfar(std::span<const double> p, int training, int guard, 
   }
   return out;
 }
-SignalResult process_iq(const RawBlock &b, const Config &c) {
-  b.validate();
-  if (c.fft_size != b.samples_per_chirp || c.chirps != b.chirps)
-    throw std::invalid_argument("Raw dimensions differ from immutable config");
-  int n = b.samples_per_chirp, m = b.chirps;
-  SignalResult r;
-  r.sample_rate_hz = b.sample_rate_hz;
-  r.chirp_period_s = b.chirp_period_s;
-  r.bins = n;
-  r.chirps = m;
-  r.range_bin_m = 299792458. * b.sample_rate_hz / (2 * b.slope_hz_s * n);
-  r.velocity_bin_mps = b.wavelength_m / (2 * b.chirp_period_s * m);
-  r.i.resize(n);
-  r.q.resize(n);
-  r.spectrum.resize(n);
-  r.phase.resize(n);
-  r.range_profile.resize(n);
-  r.range_doppler.resize(n * m);
-  for (int k = 0; k < n; ++k) {
-    r.i[k] = b.iq[k].real();
-    r.q[k] = b.iq[k].imag();
-  }
-  auto a = b.iq;
-  double gain = c.window == "hann" ? (n - 1.) / (2 * n) : 1.;
-  for (int ch = 0; ch < 2; ++ch)
-    for (int j = 0; j < m; ++j) {
-      auto row = std::span(a).subspan((ch * m + j) * n, n);
-      std::complex<double> dc = 0;
-      for (auto v : row)
-        dc += v;
-      dc /= n;
-      for (int k = 0; k < n; ++k)
-        row[k] =
-            (row[k] - dc) * (c.window == "hann" ? .5 - .5 * std::cos(2 * pi * k / (n - 1)) : 1.);
-      fft(row);
-      for (auto &v : row)
-        v /= n * gain;
-    }
-  for (int k = 0; k < n; ++k) {
-    r.spectrum[k] = std::abs(a[k]);
-    r.phase[k] = std::arg(a[k]);
-    for (int j = 0; j < m; ++j)
-      r.range_profile[k] += std::norm(a[j * n + k]) / m;
-  }
-  r.threshold = ca_cfar(r.range_profile, c.cfar_training, c.cfar_guard, c.cfar_pfa);
-  std::vector<std::complex<double>> col(m);
-  double dg = (m - 1.) / (2 * m);
-  for (int k = 0; k < n; ++k) {
-    for (int j = 0; j < m; ++j)
-      col[j] = a[j * n + k] * (.5 - .5 * std::cos(2 * pi * j / (m - 1)));
-    fft(col);
-    for (int j = 0; j < m; ++j)
-      r.range_doppler[((j + m / 2) % m) * n + k] = std::norm(col[j] / (m * dg));
-  }
-  for (int k = 1; k < n / 2 - 1; ++k)
-    if (r.threshold[k] >= 0 && r.range_profile[k] > r.threshold[k] &&
-        r.range_profile[k] > r.range_profile[k - 1] &&
-        r.range_profile[k] > r.range_profile[k + 1]) {
-      int dbin = 0;
-      for (int j = 1; j < m; ++j)
-        if (r.range_doppler[j * n + k] > r.range_doppler[dbin * n + k])
-          dbin = j;
-      std::complex<double> cross = 0;
-      for (int j = 0; j < m; ++j)
-        cross += a[(m + j) * n + k] * std::conj(a[j * n + k]);
-      double sx = std::clamp(std::arg(cross) / pi, -1., 1.), range = k * r.range_bin_m;
-      double variance = std::max(1., range * range * .0025);
-      r.detections.push_back({b.envelope.sequence_no * 2048 + static_cast<uint64_t>(k), range * sx,
-                              range * std::sqrt(1 - sx * sx), variance, variance, range,
-                              (dbin - m / 2) * r.velocity_bin_mps, .8});
-    }
-  return r;
-}
 json SignalResult::to_json() const {
-  return {{"schema_version", 1},
+  json result = {{"schema_version", 1},
           {"samples", bins},
           {"chirps", chirps},
           {"range_bin_m", range_bin_m},
@@ -538,9 +507,40 @@ json SignalResult::to_json() const {
           {"cfar_edge_policy", "skip; threshold -1 means unavailable"},
           {"provenance", "SIMULATED educational FMCW; two calibrated half-wavelength ULA channels; "
                          "uncalibrated model"}};
+  if (processing) result["processing"] = processing->to_json();
+  if (!range_doppler_threshold.empty())
+    result["range_doppler_threshold_power"] = range_doppler_threshold;
+  return result;
 }
 
 void Tracker::update(std::span<const Detection> obs, int64_t ns, const Config &c) {
+  update(obs, ns, c, nullptr);
+}
+void Tracker::update(std::span<const Detection> obs, int64_t ns, const Config &c,
+                     std::optional<TrackingDiagnostics> *output) {
+  if (output)
+    output->reset();
+  if (c.tracking_diagnostics &&
+      (c.tracking_diagnostics->version != 1 || !c.tracking_diagnostics->enabled))
+    throw std::invalid_argument("Invalid tracking diagnostics options");
+  if (ns < 0 || obs.size() > 128)
+    throw std::invalid_argument("Invalid observation timestamp/capacity");
+  std::set<uint64_t> ids;
+  for (const auto &d : obs)
+    if (!ids.insert(d.id).second)
+      throw std::invalid_argument("Duplicate observation identifier");
+  const bool collect = output && c.tracking_diagnostics && c.tracking_diagnostics->enabled;
+  if (collect && ns > 9007199254740991LL)
+    throw std::invalid_argument("Diagnostics timestamp exceeds safe JSON integer");
+  if (collect)
+    for (const auto &d : obs)
+      if (d.id > 9007199254740991ULL)
+        throw std::invalid_argument("Diagnostics observation identifier exceeds safe JSON integer");
+  TrackingDiagnostics report;
+  report.timestamp_ns = ns;
+  report.prior_tracks = static_cast<uint32_t>(tracks_.size());
+  report.observations = static_cast<uint32_t>(obs.size());
+  report.evaluated_pairs = report.prior_tracks * report.observations;
   if (previous_ns_ >= 0 && ns <= previous_ns_)
     throw std::invalid_argument("Out-of-order/duplicate observation timestamp rejected");
   for (auto &d : obs)
@@ -548,6 +548,8 @@ void Tracker::update(std::span<const Detection> obs, int64_t ns, const Config &c
         !std::isfinite(d.var_y) || d.var_x <= 0 || d.var_y <= 0)
       throw std::invalid_argument("Invalid observation position/covariance");
   double dt = previous_ns_ < 0 ? c.dt_s : (ns - previous_ns_) * 1e-9;
+  if (!std::isfinite(dt) || dt <= 0)
+    throw std::invalid_argument("Invalid tracking time interval");
   previous_ns_ = ns;
   for (auto &t : tracks_) {
     t.state[0] += dt * t.state[2];
@@ -574,20 +576,34 @@ void Tracker::update(std::span<const Detection> obs, int64_t ns, const Config &c
   }
   struct Candidate {
     double distance;
-    size_t t, d;
+    size_t t, d, report_index;
   };
   std::vector<Candidate> candidates;
+  std::vector<AssociationDiagnostic> pair_reports;
   for (size_t i = 0; i < tracks_.size(); ++i)
     for (size_t j = 0; j < obs.size(); ++j) {
       auto &t = tracks_[i];
       auto &d = obs[j];
-      double a = t.covariance[0] + d.var_x, b = t.covariance[1], cc = t.covariance[5] + d.var_y,
-             det = a * cc - b * b, dx = d.x - t.state[0], dy = d.y - t.state[1];
-      if (det <= 0)
-        throw std::runtime_error("Nonpositive innovation covariance");
-      double dist = (cc * dx * dx - 2 * b * dx * dy + a * dy * dy) / det;
-      if (dist < 9.21034)
-        candidates.push_back({dist, i, j});
+      const auto innovation =
+          tracking_innovation({t.state[0], t.state[1]},
+                              {t.covariance[0], t.covariance[1], t.covariance[4], t.covariance[5]},
+                              {d.x, d.y}, {d.var_x, d.var_y});
+      const double dist = innovation.mahalanobis_squared;
+      if (dist < 9.21034) {
+        size_t index = 0;
+        if (collect) {
+          ++report.gate_pass_pairs;
+          index = pair_reports.size();
+          pair_reports.push_back(
+              {t.id, d.id, t.confirmed, {t.state[0], t.state[1]}, innovation, "selected"});
+        }
+        candidates.push_back({dist, i, j, index});
+      } else if (collect) {
+        ++report.gate_reject_pairs;
+        if (report.gate_reject_examples.size() < 32)
+          report.gate_reject_examples.push_back(
+              {t.id, d.id, t.confirmed, {t.state[0], t.state[1]}, innovation, "gate_rejected"});
+      }
     }
   // Reacquire established hypotheses before tentative births can take their
   // in-gate observations. Within each lifecycle class retain nearest-neighbor
@@ -599,8 +615,28 @@ void Tracker::update(std::span<const Detection> obs, int64_t ns, const Config &c
   });
   std::vector<bool> used_t(tracks_.size()), used_d(obs.size());
   for (auto cand : candidates) {
-    if (used_t[cand.t] || used_d[cand.d])
+    if (used_t[cand.t] || used_d[cand.d]) {
+      if (collect) {
+        auto pair = pair_reports[cand.report_index];
+        if (used_t[cand.t] && used_d[cand.d]) {
+          ++report.skipped_both;
+          pair.disposition = "both_used";
+        } else if (used_t[cand.t]) {
+          ++report.skipped_track_only;
+          pair.disposition = "track_used";
+        } else {
+          ++report.skipped_observation_only;
+          pair.disposition = "observation_used";
+        }
+        if (report.conflict_examples.size() < 32)
+          report.conflict_examples.push_back(std::move(pair));
+      }
       continue;
+    }
+    if (collect) {
+      ++report.selected_associations;
+      report.matches.push_back(pair_reports[cand.report_index]);
+    }
     used_t[cand.t] = used_d[cand.d] = true;
     auto &t = tracks_[cand.t];
     auto &d = obs[cand.d];
@@ -637,9 +673,11 @@ void Tracker::update(std::span<const Detection> obs, int64_t ns, const Config &c
     t.last_ns = ns;
     t.matched = {d.id};
   }
+  const auto before_deletion = tracks_.size();
   std::erase_if(tracks_, [&](const Track &t) {
     return t.misses > c.coast_frames || (!t.confirmed && t.misses > 1);
   });
+  report.deleted_tracks = static_cast<uint32_t>(before_deletion - tracks_.size());
   for (size_t j = 0; j < obs.size(); ++j)
     if (!used_d[j]) {
       if (tracks_.size() >= 128)
@@ -654,6 +692,20 @@ void Tracker::update(std::span<const Detection> obs, int64_t ns, const Config &c
       t.matched = {d.id};
       tracks_.push_back(t);
     }
+  for (const auto &track : tracks_) {
+    for (double value : track.state)
+      if (!std::isfinite(value))
+        throw std::runtime_error("Nonfinite tracking state");
+    for (double value : track.covariance)
+      if (!std::isfinite(value))
+        throw std::runtime_error("Nonfinite tracking covariance");
+  }
+  if (collect) {
+    report.born_tracks = report.observations - report.selected_associations;
+    report.unmatched_prior_tracks = report.prior_tracks - report.selected_associations;
+    (void)report.to_json(); // Validate bounded report before publishing it transactionally.
+    *output = std::move(report);
+  }
 }
 json serialize(const Truth &t) {
   return {{"schema_version", 1}, {"object_id", t.id}, {"x_m", t.x},

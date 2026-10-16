@@ -1,4 +1,5 @@
 #pragma once
+#include <aethersense/tracking_diagnostics.hpp>
 #include <array>
 #include <complex>
 #include <cstdint>
@@ -39,6 +40,27 @@ struct ScenarioOverrides {
   std::optional<ScenarioFalseBurst> false_burst;
   std::optional<ScenarioHighNoise> high_noise;
 };
+// Optional explicit IQ chain extension. Absent preserves legacy reference output.
+struct IQProcessingConfig {
+  int version{1};
+  std::string precision{"float64"}, fft_backend{"reference_cpu"}, cfar_mode{"range_1d"};
+  int training_rows{2}, training_columns{3}, guard_rows{1}, guard_columns{1};
+  double pfa{0.001};
+  void validate(int samples, int chirps) const;
+  json to_json() const;
+  static IQProcessingConfig from_json(const json &);
+};
+struct SignalProcessing {
+  std::string precision, fft_backend, cfar_mode, cfar_accumulation_precision;
+  std::string geometry_precision{"float64"}, output_storage{"float64"};
+  std::string threshold_power_role, fft_temporary_allocation, native_instruction_set;
+  json to_json() const;
+};
+struct RecordingOptions {
+  int version{1};
+  std::string mode{"async_worker"};
+  int queue_capacity{2};
+};
 struct Config {
   std::string scenario{"crossing_paths"}, input{"synthetic_detections"}, window{"hann"},
       executor{"single_thread"};
@@ -49,6 +71,9 @@ struct Config {
   int cfar_training{6}, cfar_guard{2};
   double cfar_pfa{0.001};
   std::optional<ScenarioOverrides> scenario_overrides;
+  std::optional<IQProcessingConfig> iq_processing;
+  std::optional<RecordingOptions> recording_options;
+  std::optional<TrackingDiagnosticsOptions> tracking_diagnostics;
   void validate() const;
   json to_json() const;
   static Config from_json(const json &);
@@ -83,6 +108,8 @@ struct SignalResult {
   double range_bin_m{}, velocity_bin_mps{}, sample_rate_hz{}, chirp_period_s{};
   std::vector<double> i, q, spectrum, phase, range_profile, threshold, range_doppler;
   std::vector<Detection> detections;
+  std::optional<SignalProcessing> processing;
+  std::vector<double> range_doppler_threshold;
   json to_json() const;
 };
 class Random {
@@ -109,6 +136,8 @@ class Tracker {
 
 public:
   void update(std::span<const Detection>, int64_t timestamp_ns, const Config &);
+  void update(std::span<const Detection>, int64_t timestamp_ns, const Config &,
+              std::optional<TrackingDiagnostics> *output);
   const std::vector<Track> &tracks() const { return tracks_; }
 };
 json serialize(const Track &);

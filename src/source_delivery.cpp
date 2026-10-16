@@ -51,7 +51,10 @@ void SourceOptions::validate() const {
 }
 J SourceOptions::to_json() const {
   J j={{"schema_version",version},{"mode",mode},{"rate_hz",rate_hz},{"queue_capacity",queue_capacity},{"overflow",overflow}};
-  if(delivery) j["delivery"]={{"every_n",delivery->every_n},{"delay_frames",delivery->delay_frames}}; return j;
+  if(delivery) {
+    j["delivery"]={{"every_n",delivery->every_n},{"delay_frames",delivery->delay_frames}};
+  }
+  return j;
 }
 SourceOptions SourceOptions::from_json(const J& j) {
   fields(j,{"schema_version","mode","rate_hz","queue_capacity","overflow"},{"delivery"});

@@ -11,6 +11,10 @@
 namespace aether {
 constexpr double pi = std::numbers::pi;
 void Config::validate() const {
+  if (executor != "single_thread" && executor != "staged_threads")
+    throw std::invalid_argument("Executor must be single_thread or staged_threads");
+  if (queue_capacity < 1 || queue_capacity > 64)
+    throw std::invalid_argument("Queue capacity must be 1..64");
   if (scenario != "single_stationary" && scenario != "crossing_paths" &&
       scenario != "intermittent_observation" && scenario != "noise_sweep" &&
       scenario != "overload_test")
@@ -38,6 +42,8 @@ void Config::validate() const {
 }
 json Config::to_json() const {
   return {{"schema_version", 1},
+          {"executor", executor},
+          {"queue_capacity", queue_capacity},
           {"scenario", scenario},
           {"input", input},
           {"seed", seed},
@@ -60,8 +66,9 @@ Config Config::from_json(const json &j) {
   if (!j.is_object())
     throw std::invalid_argument("Configuration must be an object");
   Config c;
-  for (const auto *key : {"schema_version", "seed", "objects", "fft_size", "chirps",
-                          "cfar_training", "cfar_guard", "confirmation_hits", "coast_frames"}) {
+  for (const auto *key :
+       {"schema_version", "seed", "objects", "fft_size", "chirps", "cfar_training", "cfar_guard",
+        "confirmation_hits", "coast_frames", "queue_capacity"}) {
     if (j.contains(key) && !j.at(key).is_number_integer())
       throw std::invalid_argument(std::string(key) + " must be an integer");
     if (j.contains(key) && std::string_view(key) != "seed" &&
@@ -81,6 +88,8 @@ Config Config::from_json(const json &j) {
 #define FIELD(x)                                                                                   \
   if (j.contains(#x))                                                                              \
   j.at(#x).get_to(c.x)
+  FIELD(executor);
+  FIELD(queue_capacity);
   FIELD(scenario);
   FIELD(input);
   FIELD(seed);
@@ -388,8 +397,14 @@ void Tracker::update(std::span<const Detection> obs, int64_t ns, const Config &c
       if (dist < 9.21034)
         candidates.push_back({dist, i, j});
     }
-  std::stable_sort(candidates.begin(), candidates.end(),
-                   [](auto &a, auto &b) { return a.distance < b.distance; });
+  // Reacquire established hypotheses before tentative births can take their
+  // in-gate observations. Within each lifecycle class retain nearest-neighbor
+  // distance and stable tie order; this favors continuity over tentative capture.
+  std::stable_sort(candidates.begin(), candidates.end(), [&](const auto &a, const auto &b) {
+    if (tracks_[a.t].confirmed != tracks_[b.t].confirmed)
+      return tracks_[a.t].confirmed;
+    return a.distance < b.distance;
+  });
   std::vector<bool> used_t(tracks_.size()), used_d(obs.size());
   for (auto cand : candidates) {
     if (used_t[cand.t] || used_d[cand.d])

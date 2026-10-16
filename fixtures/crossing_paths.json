@@ -1,0 +1,3393 @@
+{
+  "clock_domain": "simulated",
+  "config": {
+    "cfar_guard": 2,
+    "cfar_pfa": 0.001,
+    "cfar_training": 6,
+    "chirps": 32,
+    "coast_frames": 5,
+    "confirmation_hits": 3,
+    "dropout": 0.05,
+    "dt_s": 0.1,
+    "duration_s": 60.0,
+    "false_rate": 0.1,
+    "fft_size": 128,
+    "input": "synthetic_detections",
+    "noise_m": 0.6,
+    "objects": 2,
+    "scenario": "crossing_paths",
+    "schema_version": 1,
+    "seed": 42,
+    "window": "hann"
+  },
+  "fixture_type": "normalized_observation_golden",
+  "frames": [
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -25.0,
+          "y_m": 35.0
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -7.0,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 1,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.8195458531439259,
+          "range_m": 42.68675712407274,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -24.614550818349656,
+          "y_m": 34.87525084899687
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 2,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.16204243339765947,
+          "range_m": 46.518160622726974,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -7.498684257975835,
+          "y_m": 45.90979200694566
+        }
+      ],
+      "timestamp_ns": 0
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -24.88,
+          "y_m": 34.985
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -7.11,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 129,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.1645322762571906,
+          "range_m": 47.871475905408595,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -7.135959796538942,
+          "y_m": 47.33662728949218
+        },
+        {
+          "confidence": 0.3,
+          "covariance_m2": [
+            4.0,
+            0,
+            0,
+            4.0
+          ],
+          "observation_id": 130,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.0,
+          "range_m": 117.9553894593019,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -44.54450459918007,
+          "y_m": 109.22115643275902
+        },
+        {
+          "confidence": 0.3,
+          "covariance_m2": [
+            4.0,
+            0,
+            0,
+            4.0
+          ],
+          "observation_id": 131,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.0,
+          "range_m": 15.563438699169822,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -9.527697039302438,
+          "y_m": 12.306242857594043
+        }
+      ],
+      "timestamp_ns": 100000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -24.76,
+          "y_m": 34.97
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -7.22,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 257,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.8158474045065509,
+          "range_m": 42.23087929240706,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -24.240174279028487,
+          "y_m": 34.58122491659573
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 258,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.16701953503661635,
+          "range_m": 48.16366448353969,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -7.128136101905702,
+          "y_m": 47.63326833417681
+        }
+      ],
+      "timestamp_ns": 200000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -24.64,
+          "y_m": 34.955
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -7.33,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 385,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.8139822732642735,
+          "range_m": 43.19385208097839,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -24.387809620848767,
+          "y_m": 35.65029592430724
+        }
+      ],
+      "timestamp_ns": 300000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -24.52,
+          "y_m": 34.94
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -7.44,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 513,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.8121064617910495,
+          "range_m": 43.53829672882201,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -25.461432731567225,
+          "y_m": 35.31711660516513
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 514,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.17198615892253374,
+          "range_m": 48.24445562353142,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -7.084851759918683,
+          "y_m": 47.721403729886966
+        }
+      ],
+      "timestamp_ns": 400000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -24.4,
+          "y_m": 34.925
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -7.55,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 641,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.8102199132827058,
+          "range_m": 43.74337623819565,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -24.145899627610536,
+          "y_m": 36.475450592003625
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 642,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.17446545381227993,
+          "range_m": 47.503550438417946,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -7.957086101285874,
+          "y_m": 46.83238286732846
+        }
+      ],
+      "timestamp_ns": 500000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -24.28,
+          "y_m": 34.91
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -7.66,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 769,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.1769420241927721,
+          "range_m": 47.52803469240548,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -7.156774467238876,
+          "y_m": 46.98611136226934
+        }
+      ],
+      "timestamp_ns": 600000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -24.16,
+          "y_m": 34.895
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -7.7700000000000005,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 897,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.8064143776122883,
+          "range_m": 43.114023827359624,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -23.85854043671352,
+          "y_m": 35.910849319054535
+        },
+        {
+          "confidence": 0.3,
+          "covariance_m2": [
+            4.0,
+            0,
+            0,
+            4.0
+          ],
+          "observation_id": 898,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.0,
+          "range_m": 114.05532549758294,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -68.02882467629388,
+          "y_m": 91.54614294180647
+        }
+      ],
+      "timestamp_ns": 700000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -24.04,
+          "y_m": 34.88
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -7.88,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 1025,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.804495276527586,
+          "range_m": 42.77419287515367,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -23.98513156180156,
+          "y_m": 35.41673389916013
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 1026,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.18188685323709106,
+          "range_m": 48.79710061133118,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -8.380458503392108,
+          "y_m": 48.07208070538762
+        }
+      ],
+      "timestamp_ns": 800000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -23.92,
+          "y_m": 34.865
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -7.99,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 1153,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.802565210574419,
+          "range_m": 41.992429291304916,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -23.989140078972216,
+          "y_m": 34.46571159945333
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 1154,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.18435504332725589,
+          "range_m": 47.184031537093226,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -8.262069322428536,
+          "y_m": 46.455043241878414
+        }
+      ],
+      "timestamp_ns": 900000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -23.8,
+          "y_m": 34.85
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -8.1,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 1281,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.8006241226700687,
+          "range_m": 42.70815391523924,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -25.30433476945941,
+          "y_m": 34.40460801582968
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 1282,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.1868203717649063,
+          "range_m": 48.34290908213798,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -9.60934989004992,
+          "y_m": 47.37823607115883
+        }
+      ],
+      "timestamp_ns": 1000000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -23.68,
+          "y_m": 34.835
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -8.21,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 1409,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7986719556944546,
+          "range_m": 42.42889011493912,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -24.189136586099202,
+          "y_m": 34.85823270914083
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 1410,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.1892828047930825,
+          "range_m": 46.46343657128635,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -7.24521418299893,
+          "y_m": 45.89507391274603
+        }
+      ],
+      "timestamp_ns": 1100000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -23.56,
+          "y_m": 34.82
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -8.32,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 1537,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7967086524965743,
+          "range_m": 42.24100264541297,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -23.311392277711008,
+          "y_m": 35.22614504263078
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 1538,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.19174230887030613,
+          "range_m": 47.39829555139441,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -8.107471009554796,
+          "y_m": 46.6997573334869
+        }
+      ],
+      "timestamp_ns": 1200000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -23.44,
+          "y_m": 34.805
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -8.43,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 1665,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7947341559010827,
+          "range_m": 41.89732645550637,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -22.472975882680167,
+          "y_m": 35.3603071125768
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 1666,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.19419885067248838,
+          "range_m": 46.917832450765545,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -7.463670843527385,
+          "y_m": 46.320369379114275
+        }
+      ],
+      "timestamp_ns": 1300000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -23.32,
+          "y_m": 34.79
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -8.540000000000001,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 1793,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7927484087150183,
+          "range_m": 42.31562559237147,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -24.35877122527616,
+          "y_m": 34.601480223661255
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 1794,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.19665239709480076,
+          "range_m": 47.63225429195135,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -7.756518860188502,
+          "y_m": 46.996468634405474
+        }
+      ],
+      "timestamp_ns": 1400000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -23.2,
+          "y_m": 34.775
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -8.65,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 1921,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.1991029152535106,
+          "range_m": 47.09807665821564,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -8.059433806579651,
+          "y_m": 46.40338728606477
+        }
+      ],
+      "timestamp_ns": 1500000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -23.08,
+          "y_m": 34.76
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -8.76,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 2049,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7887429337526074,
+          "range_m": 41.33786346816764,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -22.322509727067516,
+          "y_m": 34.792592826603844
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 2050,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.2015503724877803,
+          "range_m": 47.42819881476636,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -8.292705359149837,
+          "y_m": 46.69759180770817
+        }
+      ],
+      "timestamp_ns": 1600000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -22.96,
+          "y_m": 34.745
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -8.870000000000001,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 2177,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7867230915648179,
+          "range_m": 41.641494841671175,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -22.63772901652565,
+          "y_m": 34.95064116183392
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 2178,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.20399473636142942,
+          "range_m": 47.64602074439806,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -9.773586814790272,
+          "y_m": 46.63282420730454
+        }
+      ],
+      "timestamp_ns": 1700000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -22.84,
+          "y_m": 34.73
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -8.98,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 2305,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7846917699780499,
+          "range_m": 42.356719306445754,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -23.373087635886623,
+          "y_m": 35.32407740862029
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 2306,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.20643597466466104,
+          "range_m": 47.12365902081581,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -9.392724731172729,
+          "y_m": 46.178089627382064
+        }
+      ],
+      "timestamp_ns": 1800000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -22.72,
+          "y_m": 34.715
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -9.09,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 2433,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7826489118172656,
+          "range_m": 41.04188450481187,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -22.74548932654117,
+          "y_m": 34.16253794732643
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 2434,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.208874055415751,
+          "range_m": 47.16410948929152,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -8.711171279210108,
+          "y_m": 46.35265600655634
+        }
+      ],
+      "timestamp_ns": 1900000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -22.6,
+          "y_m": 34.7
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -9.2,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 2561,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7805944599332629,
+          "range_m": 41.266659919229355,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -23.18147531288036,
+          "y_m": 34.14024638469455
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 2562,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.2113089468627003,
+          "range_m": 48.01024376111136,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -8.925957212568557,
+          "y_m": 47.17319995337107
+        }
+      ],
+      "timestamp_ns": 2000000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -22.48,
+          "y_m": 34.685
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -9.31,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 2689,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7785283572104496,
+          "range_m": 42.08646271897519,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -22.902116704918452,
+          "y_m": 35.30953687929061
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 2690,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.21374061748485104,
+          "range_m": 48.22394930281156,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -8.116246611216956,
+          "y_m": 47.536047661811864
+        },
+        {
+          "confidence": 0.3,
+          "covariance_m2": [
+            4.0,
+            0,
+            0,
+            4.0
+          ],
+          "observation_id": 2691,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.0,
+          "range_m": 39.941647987673775,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -30.251063134055585,
+          "y_m": 26.080805647652596
+        }
+      ],
+      "timestamp_ns": 2100000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -22.36,
+          "y_m": 34.67
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -9.42,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 2817,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7764505465747735,
+          "range_m": 40.90811068620061,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -22.22395941070694,
+          "y_m": 34.34485620912819
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 2818,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.21616903599446463,
+          "range_m": 47.97591540592954,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -9.726580106867353,
+          "y_m": 46.97959236159462
+        }
+      ],
+      "timestamp_ns": 2200000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -22.24,
+          "y_m": 34.655
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -9.530000000000001,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 2945,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7743609710018108,
+          "range_m": 41.67008813711589,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -22.202305180972836,
+          "y_m": 35.26264156307569
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 2946,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.2185941713382639,
+          "range_m": 48.35824360072219,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -10.347072655682812,
+          "y_m": 47.23830872930158
+        }
+      ],
+      "timestamp_ns": 2300000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -22.12,
+          "y_m": 34.64
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -9.64,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 3073,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7722595735250122,
+          "range_m": 41.081557157902076,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -22.297115024812474,
+          "y_m": 34.50410120678783
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 3074,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.22101599269893715,
+          "range_m": 48.47055883854006,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -9.449728335504892,
+          "y_m": 47.54048494184225
+        }
+      ],
+      "timestamp_ns": 2400000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -22.0,
+          "y_m": 34.625
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -9.75,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 3201,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.22343446949660575,
+          "range_m": 47.30068892870951,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -9.862440781265613,
+          "y_m": 46.26107905103999
+        }
+      ],
+      "timestamp_ns": 2500000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -21.88,
+          "y_m": 34.61
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -9.860000000000001,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 3329,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7680210853336884,
+          "range_m": 41.45416014241956,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -22.27719492306665,
+          "y_m": 34.95960496734853
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 3330,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.22584957139025397,
+          "range_m": 48.24966848338211,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -10.372277189704967,
+          "y_m": 47.121612606703124
+        }
+      ],
+      "timestamp_ns": 2600000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -21.76,
+          "y_m": 34.595
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -9.97,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 3457,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7658838810519137,
+          "range_m": 41.96663754298792,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -22.746517015048692,
+          "y_m": 35.26747269579468
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 3458,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.2282612682791218,
+          "range_m": 48.31689285556341,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -9.699944035157475,
+          "y_m": 47.33321477494221
+        }
+      ],
+      "timestamp_ns": 2700000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -21.64,
+          "y_m": 34.58
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -10.08,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 3585,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7637346277494332,
+          "range_m": 39.388259041354864,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -21.13117775465948,
+          "y_m": 33.24016060445343
+        }
+      ],
+      "timestamp_ns": 2800000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -21.52,
+          "y_m": 34.565
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -10.190000000000001,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 3713,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7615732688784371,
+          "range_m": 39.83665077815346,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -21.674581397036587,
+          "y_m": 33.4241120522863
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 3714,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.23307432784885043,
+          "range_m": 48.07532852374657,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -11.39852823405682,
+          "y_m": 46.70450478019835
+        }
+      ],
+      "timestamp_ns": 2900000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -21.4,
+          "y_m": 34.55
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -10.3,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 3841,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.23547563154148213,
+          "range_m": 47.69698309537949,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -8.807074501908913,
+          "y_m": 46.876834738693084
+        }
+      ],
+      "timestamp_ns": 3000000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -21.28,
+          "y_m": 34.535
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -10.41,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 3969,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7572140088029208,
+          "range_m": 40.516707423664705,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -20.63476630035598,
+          "y_m": 34.868467132705156
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 3970,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.2378734122553994,
+          "range_m": 48.06404502419422,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -10.982757013052604,
+          "y_m": 46.79242964925003
+        }
+      ],
+      "timestamp_ns": 3100000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -21.16,
+          "y_m": 34.52
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -10.520000000000001,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 4097,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7550159950944091,
+          "range_m": 39.934073656448824,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -21.26618341590481,
+          "y_m": 33.80058700259177
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 4098,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.24026764111070575,
+          "range_m": 48.8012549640564,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -10.527319368195437,
+          "y_m": 47.65226157263532
+        }
+      ],
+      "timestamp_ns": 3200000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -21.04,
+          "y_m": 34.505
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -10.63,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 4225,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7528056508287052,
+          "range_m": 39.592982897488675,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -21.04116955113569,
+          "y_m": 33.53913354040606
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 4226,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.24265828947533252,
+          "range_m": 48.63256915719463,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -10.428615175206309,
+          "y_m": 47.50127122885002
+        }
+      ],
+      "timestamp_ns": 3300000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -20.919999999999998,
+          "y_m": 34.49
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -10.74,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 4353,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7505829201075508,
+          "range_m": 39.99005765004644,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -20.898899998368627,
+          "y_m": 34.094584463111225
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 4354,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.24504532896617104,
+          "range_m": 47.20940376195234,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -10.414607126917476,
+          "y_m": 46.04632191555585
+        }
+      ],
+      "timestamp_ns": 3400000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -20.8,
+          "y_m": 34.475
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -10.85,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 4481,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7483477471921607,
+          "range_m": 39.17667447533849,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -19.402367829469373,
+          "y_m": 34.03468738737892
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 4482,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.24742873145016603,
+          "range_m": 47.26659993649371,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -11.26736045259255,
+          "y_m": 45.90400917118134
+        }
+      ],
+      "timestamp_ns": 3500000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -20.68,
+          "y_m": 34.46
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -10.96,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 4609,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7461000765134812,
+          "range_m": 40.64241175955818,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -21.899999629461142,
+          "y_m": 34.23734291476304
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 4610,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.24980846904537318,
+          "range_m": 48.120657062464566,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -11.283801970595402,
+          "y_m": 46.778985123789376
+        }
+      ],
+      "timestamp_ns": 3600000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -20.56,
+          "y_m": 34.445
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -11.07,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 4737,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7438398526826229,
+          "range_m": 39.95288951300117,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -20.915648076791207,
+          "y_m": 34.04069690775879
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 4738,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.25218451412197834,
+          "range_m": 48.47247892579149,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -10.6803401232994,
+          "y_m": 47.28119655911789
+        }
+      ],
+      "timestamp_ns": 3700000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -20.44,
+          "y_m": 34.43
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -11.180000000000001,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 4865,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7415670205014706,
+          "range_m": 40.34051704494338,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -19.564726393683937,
+          "y_m": 35.27858835885663
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 4866,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.2545568393032805,
+          "range_m": 47.016565464473345,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -9.532488743650983,
+          "y_m": 46.04008130343902
+        }
+      ],
+      "timestamp_ns": 3800000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -20.32,
+          "y_m": 34.415
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -11.290000000000001,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 4993,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7392815249734691,
+          "range_m": 40.51652409062386,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -20.515606073910863,
+          "y_m": 34.93849784701992
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 4994,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.25692541746663716,
+          "range_m": 48.924182396975574,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -11.585481615080676,
+          "y_m": 47.53264392982114
+        }
+      ],
+      "timestamp_ns": 3900000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -20.2,
+          "y_m": 34.4
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -11.4,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 5121,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7369833113145878,
+          "range_m": 40.325278749172114,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -19.977102098603968,
+          "y_m": 35.02918066327537
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 5122,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.25929022174437305,
+          "range_m": 48.234924947700016,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -10.845099406461172,
+          "y_m": 46.99991280390027
+        }
+      ],
+      "timestamp_ns": 4000000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -20.08,
+          "y_m": 34.385
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -11.510000000000002,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 5249,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7346723249644629,
+          "range_m": 40.513980214215785,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -20.066708739415112,
+          "y_m": 35.195309249463186
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 5250,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.26165122552465186,
+          "range_m": 47.773040155712046,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -11.775403312624885,
+          "y_m": 46.299063084951285
+        }
+      ],
+      "timestamp_ns": 4100000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -19.96,
+          "y_m": 34.37
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -11.620000000000001,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 5377,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.73234851159772,
+          "range_m": 39.28463177834294,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -19.66970898294383,
+          "y_m": 34.00565897738626
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 5378,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.26400840245231105,
+          "range_m": 48.251489365505826,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -11.70528174966559,
+          "y_m": 46.81017629907483
+        }
+      ],
+      "timestamp_ns": 4200000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -19.84,
+          "y_m": 34.355
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -11.73,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 5505,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7300118171354765,
+          "range_m": 39.70908009701176,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -19.824250904186375,
+          "y_m": 34.406541794239665
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 5506,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.2663617264296602,
+          "range_m": 49.525517185534746,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -11.418042718312549,
+          "y_m": 48.19133898303187
+        }
+      ],
+      "timestamp_ns": 4300000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -19.72,
+          "y_m": 34.34
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -11.840000000000002,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 5633,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7276621877570236,
+          "range_m": 39.49800707584404,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -19.348653440118483,
+          "y_m": 34.43431679324591
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 5634,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.26871117161724284,
+          "range_m": 48.79557414452051,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -11.60985619173779,
+          "y_m": 47.39429602072981
+        }
+      ],
+      "timestamp_ns": 4400000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -19.6,
+          "y_m": 34.325
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -11.950000000000001,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 5761,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7252995699116922,
+          "range_m": 39.554305163275,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -18.574511245340602,
+          "y_m": 34.9217781469701
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 5762,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.2710567124345612,
+          "range_m": 49.04851289587631,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -12.035844759090685,
+          "y_m": 47.548870209837936
+        }
+      ],
+      "timestamp_ns": 4500000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -19.48,
+          "y_m": 34.31
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -12.06,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 5889,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7229239103308973,
+          "range_m": 39.350830657833,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -19.04860292946228,
+          "y_m": 34.433103256853435
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 5890,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.27339832356076577,
+          "range_m": 48.57384995110867,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -12.240374678513014,
+          "y_m": 47.00629879922942
+        }
+      ],
+      "timestamp_ns": 4600000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -19.36,
+          "y_m": 34.295
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -12.17,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 6017,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7205351560403662,
+          "range_m": 39.498477335237766,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -19.018971859910668,
+          "y_m": 34.61803606783923
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 6018,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.2757359799353075,
+          "range_m": 48.36851991348019,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -12.190278979495023,
+          "y_m": 46.80716629986066
+        }
+      ],
+      "timestamp_ns": 4700000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -19.24,
+          "y_m": 34.28
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -12.280000000000001,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 6145,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7181332543725508,
+          "range_m": 39.29775478194059,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -18.48779971975324,
+          "y_m": 34.67729505633083
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 6146,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.2780696567585549,
+          "range_m": 47.97209761637435,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -12.419300208277967,
+          "y_m": 46.33662840617147
+        }
+      ],
+      "timestamp_ns": 4800000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -19.12,
+          "y_m": 34.265
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -12.39,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 6273,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7157181529792193,
+          "range_m": 39.24506215312247,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -20.46978293795904,
+          "y_m": 33.4837705444785
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 6274,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.2803993294923743,
+          "range_m": 49.369974944727886,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -12.531022649598254,
+          "y_m": 47.75319777144055
+        }
+      ],
+      "timestamp_ns": 4900000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -19.0,
+          "y_m": 34.25
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -12.5,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 6401,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7132897998442325,
+          "range_m": 37.947489965305145,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -17.894808666862197,
+          "y_m": 33.463230827930055
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 6402,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.28272497386067547,
+          "range_m": 49.16040630587043,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -12.800665546225542,
+          "y_m": 47.46460270277146
+        }
+      ],
+      "timestamp_ns": 5000000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -18.88,
+          "y_m": 34.235
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -12.610000000000001,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 6529,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7108481432965055,
+          "range_m": 38.41774091619745,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -17.898792327981468,
+          "y_m": 33.99347070106057
+        }
+      ],
+      "timestamp_ns": 5100000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -18.76,
+          "y_m": 34.22
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -12.72,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 6657,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7083931320231485,
+          "range_m": 38.916980993478205,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -18.160756489689586,
+          "y_m": 34.419737555201394
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 6658,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.28736408170959954,
+          "range_m": 49.30145312756162,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -13.139313914358905,
+          "y_m": 47.51833025632414
+        }
+      ],
+      "timestamp_ns": 5200000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -18.64,
+          "y_m": 34.205
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -12.830000000000002,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 6785,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7059247150827936,
+          "range_m": 39.51753233206381,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -18.481962941118237,
+          "y_m": 34.92924859568039
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 6786,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.2896774979526665,
+          "range_m": 48.944599810144595,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -13.664784693916253,
+          "y_m": 46.998377736301904
+        }
+      ],
+      "timestamp_ns": 5300000000
+    },
+    {
+      "evaluation_truth": [
+        {
+          "object_id": 1,
+          "schema_version": 1,
+          "vx_mps": 1.2,
+          "vy_mps": -0.15,
+          "x_m": -18.52,
+          "y_m": 34.19
+        },
+        {
+          "object_id": 2,
+          "schema_version": 1,
+          "vx_mps": -1.1,
+          "vy_mps": 0.0,
+          "x_m": -12.940000000000001,
+          "y_m": 47.0
+        }
+      ],
+      "observations": [
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 6913,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": -0.7034428419191034,
+          "range_m": 40.4224713361633,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -18.69633341164262,
+          "y_m": 35.83885190521091
+        },
+        {
+          "confidence": 0.95,
+          "covariance_m2": [
+            0.36,
+            0,
+            0,
+            0.36
+          ],
+          "observation_id": 6914,
+          "quality_flags": [
+            "modeled_covariance",
+            "simulated"
+          ],
+          "radial_velocity_mps": 0.291986791355946,
+          "range_m": 48.41629026193515,
+          "schema_version": 1,
+          "sensor_id": "synthetic-1",
+          "x_m": -13.055840030780768,
+          "y_m": 46.622764866732425
+        }
+      ],
+      "timestamp_ns": 5400000000
+    }
+  ],
+  "schema_version": 1,
+  "world_frame": "x_right_y_forward"
+}

@@ -18,7 +18,9 @@ struct Envelope {
   int64_t timestamp_ns{}, receive_steady_ns{};
 };
 struct Config {
-  std::string scenario{"crossing_paths"}, input{"synthetic_detections"}, window{"hann"};
+  std::string scenario{"crossing_paths"}, input{"synthetic_detections"}, window{"hann"},
+      executor{"single_thread"};
+  int queue_capacity{8};
   uint32_t seed{42};
   int objects{3}, fft_size{128}, chirps{32}, confirmation_hits{3}, coast_frames{5};
   double duration_s{60}, dt_s{0.1}, noise_m{0.6}, dropout{0.05}, false_rate{0.1};

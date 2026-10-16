@@ -1,3 +1,4 @@
+#include <aethersense/contracts.hpp>
 #include <aethersense/engine.hpp>
 #include <cmath>
 #include <iostream>

@@ -442,8 +442,14 @@ RawBlock synthesize_iq(const Config &c, std::span<const Truth> truth, Random &rn
 }
 void fft(std::span<std::complex<double>> a, bool inverse) {
   size_t n = a.size();
-  if (n == 0 || (n & (n - 1)))
-    throw std::invalid_argument("FFT length must be nonzero power of two");
+  if (n == 0 || (n & (n - 1)) || n > standalone_fft_max_elements)
+    throw std::invalid_argument("FFT length must be power of two in [1, 2^20]");
+  const auto finite = [](std::complex<double> v) {
+    return std::isfinite(v.real()) && std::isfinite(v.imag());
+  };
+  for (const auto v : a)
+    if (!finite(v))
+      throw std::invalid_argument("FFT input must be finite");
   for (size_t i = 1, j = 0; i < n; ++i) {
     size_t bit = n >> 1;
     for (; j & bit; bit >>= 1)
@@ -452,46 +458,90 @@ void fft(std::span<std::complex<double>> a, bool inverse) {
     if (i < j)
       std::swap(a[i], a[j]);
   }
-  for (size_t len = 2; len <= n; len <<= 1) {
+  for (size_t len = 2; len <= n; len *= 2) {
     auto wlen = std::polar(1., (inverse ? 2 : -2) * pi / len);
     for (size_t i = 0; i < n; i += len) {
       std::complex<double> w = 1;
       for (size_t j = 0; j < len / 2; ++j) {
         auto u = a[i + j], v = a[i + j + len / 2] * w;
-        a[i + j] = u + v;
-        a[i + j + len / 2] = u - v;
+        const auto sum = u + v, difference = u - v;
+        if (!finite(v) || !finite(sum) || !finite(difference))
+          throw std::overflow_error("FFT arithmetic is nonfinite; discard buffer");
+        a[i + j] = sum;
+        a[i + j + len / 2] = difference;
         w *= wlen;
+        if (!finite(w))
+          throw std::overflow_error("FFT twiddle arithmetic is nonfinite; discard buffer");
       }
     }
+    if (len == n)
+      break; // Never shift/multiply a terminal size, even on a narrow size_t.
   }
   if (inverse)
-    for (auto &v : a)
+    for (auto &v : a) {
       v /= n;
+      if (!finite(v))
+        throw std::overflow_error("FFT normalization is nonfinite; discard buffer");
+    }
 }
 std::vector<std::complex<double>> matched_filter(std::span<const std::complex<double>> a,
                                                  std::span<const std::complex<double>> ref) {
-  if (a.empty() || ref.empty())
-    throw std::invalid_argument("Empty matched-filter input");
+  if (a.empty() || ref.empty() || a.size() > matched_filter_max_input_elements ||
+      ref.size() > matched_filter_max_input_elements)
+    throw std::invalid_argument("Matched-filter input length must be in [1, 2^20]");
+  // Subtraction/division avoid overflowing size arithmetic before allocating output.
+  if (a.size() > matched_filter_max_output_elements - (ref.size() - 1) ||
+      a.size() > matched_filter_max_operations / ref.size())
+    throw std::invalid_argument("Matched-filter output or operation budget exceeded");
+  const auto finite = [](std::complex<double> v) {
+    return std::isfinite(v.real()) && std::isfinite(v.imag());
+  };
+  for (const auto input : {a, ref})
+    for (const auto value : input)
+      if (!finite(value))
+        throw std::invalid_argument("Matched-filter inputs must be finite");
   std::vector<std::complex<double>> out(a.size() + ref.size() - 1);
   for (size_t n = 0; n < a.size(); ++n)
-    for (size_t k = 0; k < ref.size(); ++k)
-      out[n + k] += a[n] * std::conj(ref[ref.size() - 1 - k]);
+    for (size_t k = 0; k < ref.size(); ++k) {
+      const auto product = a[n] * std::conj(ref[ref.size() - 1 - k]);
+      const auto sum = out[n + k] + product;
+      if (!finite(product) || !finite(sum))
+        throw std::overflow_error("Matched-filter arithmetic is nonfinite");
+      out[n + k] = sum;
+    }
   return out;
 }
 std::vector<double> ca_cfar(std::span<const double> p, int training, int guard, double pfa) {
   if (training < 1 || guard < 0 || !std::isfinite(pfa) || pfa <= 0 || pfa >= 1 ||
-      p.size() < static_cast<size_t>(2 * (training + guard) + 1))
+      p.empty() || p.size() > standalone_cfar_max_elements)
     throw std::invalid_argument("Invalid CFAR configuration");
+  const auto training_size = static_cast<std::size_t>(training);
+  const auto guard_size = static_cast<std::size_t>(guard);
+  const auto half_available = (p.size() - 1) / 2;
+  // Validate by subtraction before adding margins or doubling training counts.
+  if (training_size > half_available || guard_size > half_available - training_size)
+    throw std::invalid_argument("CFAR training/guard margin exceeds input");
+  const auto margin = training_size + guard_size;
+  const auto training_count = 2 * training_size;
   for (auto v : p)
     if (!std::isfinite(v) || v < 0)
       throw std::invalid_argument("CFAR input must be finite nonnegative power");
+  const double alpha = training_count * (std::pow(pfa, -1. / training_count) - 1);
+  if (!std::isfinite(alpha))
+    throw std::overflow_error("CFAR alpha is nonfinite");
   std::vector<double> out(p.size(), -1);
-  double alpha = 2 * training * (std::pow(pfa, -1. / (2 * training)) - 1);
-  for (int i = training + guard; i < static_cast<int>(p.size()) - training - guard; ++i) {
+  for (std::size_t i = margin; i < p.size() - margin; ++i) {
     double sum = 0;
-    for (int k = guard + 1; k <= guard + training; ++k)
+    for (std::size_t k = guard_size + 1; k <= margin; ++k) {
       sum += p[i - k] + p[i + k];
-    out[i] = alpha * sum / (2 * training);
+      if (!std::isfinite(sum))
+        throw std::overflow_error("CFAR training sum is nonfinite");
+    }
+    const double scaled = alpha * sum;
+    const double threshold = scaled / training_count;
+    if (!std::isfinite(scaled) || !std::isfinite(threshold))
+      throw std::overflow_error("CFAR threshold is nonfinite");
+    out[i] = threshold;
   }
   return out;
 }

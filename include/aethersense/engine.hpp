@@ -126,9 +126,20 @@ std::vector<Truth> truth_at(const Config &, double t);
 std::vector<Detection> simulate_detections(const Config &, std::span<const Truth>, Random &,
                                            uint64_t sequence);
 RawBlock synthesize_iq(const Config &, std::span<const Truth>, Random &, const Envelope &);
+// Educational standalone kernels; separate planned/precision FFT ports keep their own limits.
+inline constexpr std::size_t standalone_fft_max_elements = std::size_t{1} << 20;
+inline constexpr std::size_t matched_filter_max_input_elements = std::size_t{1} << 20;
+inline constexpr std::size_t matched_filter_max_output_elements = std::size_t{1} << 20;
+inline constexpr std::size_t matched_filter_max_operations = std::size_t{1} << 24;
+// Invalid shape, size or nonfinite input: invalid_argument before any FFT mutation.
+// Nonfinite arithmetic: overflow_error. FFT may be partially transformed; discard
+// its buffer after arithmetic failure. Inverse FFT divides by the element count.
 void fft(std::span<std::complex<double>>, bool inverse = false);
 std::vector<std::complex<double>> matched_filter(std::span<const std::complex<double>>,
                                                  std::span<const std::complex<double>>);
+inline constexpr std::size_t standalone_cfar_max_elements = std::size_t{1} << 20;
+// 1D CFAR: invalid_argument for shape/size/nonfinite/negative-power input;
+// overflow_error for nonfinite alpha, accumulated power or threshold arithmetic.
 std::vector<double> ca_cfar(std::span<const double>, int training, int guard, double pfa);
 SignalResult process_iq(const RawBlock &, const Config &);
 class Tracker {

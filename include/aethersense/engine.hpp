@@ -3,6 +3,7 @@
 #include <complex>
 #include <cstdint>
 #include <nlohmann/json.hpp>
+#include <optional>
 #include <random>
 #include <span>
 #include <string>
@@ -17,6 +18,27 @@ struct Envelope {
   uint64_t sequence_no{};
   int64_t timestamp_ns{}, receive_steady_ns{};
 };
+// Optional detection-scenario extension. Source windows are zero-based [start, start+count).
+struct ScenarioMotion {
+  std::string mode{"stationary_linear_turn"};
+  double stationary_s{}, linear_s{}, turn_rate_rad_s{};
+};
+struct ScenarioWindow {
+  uint32_t start_frame{}, frame_count{1};
+};
+struct ScenarioFalseBurst : ScenarioWindow {
+  double false_rate{10};
+};
+struct ScenarioHighNoise : ScenarioWindow {
+  double noise_m{4};
+};
+struct ScenarioOverrides {
+  int version{1};
+  std::optional<ScenarioMotion> motion;
+  std::optional<ScenarioWindow> occlusion;
+  std::optional<ScenarioFalseBurst> false_burst;
+  std::optional<ScenarioHighNoise> high_noise;
+};
 struct Config {
   std::string scenario{"crossing_paths"}, input{"synthetic_detections"}, window{"hann"},
       executor{"single_thread"};
@@ -26,6 +48,7 @@ struct Config {
   double duration_s{60}, dt_s{0.1}, noise_m{0.6}, dropout{0.05}, false_rate{0.1};
   int cfar_training{6}, cfar_guard{2};
   double cfar_pfa{0.001};
+  std::optional<ScenarioOverrides> scenario_overrides;
   void validate() const;
   json to_json() const;
   static Config from_json(const json &);

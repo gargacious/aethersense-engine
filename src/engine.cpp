@@ -10,6 +10,102 @@
 
 namespace aether {
 constexpr double pi = std::numbers::pi;
+namespace {
+void scenario_keys(const json &value, std::initializer_list<std::string_view> allowed,
+                   std::initializer_list<std::string_view> required) {
+  if (!value.is_object())
+    throw std::invalid_argument("Scenario override must be an object");
+  for (auto it = value.begin(); it != value.end(); ++it)
+    if (std::find(allowed.begin(), allowed.end(), it.key()) == allowed.end())
+      throw std::invalid_argument("Unknown scenario override field: " + it.key());
+  for (auto key : required)
+    if (!value.contains(key))
+      throw std::invalid_argument("Missing scenario override field: " + std::string(key));
+}
+double scenario_number(const json &value, const char *key) {
+  if (!value.at(key).is_number())
+    throw std::invalid_argument("Scenario field must be numeric");
+  const auto number = value.at(key).get<double>();
+  if (!std::isfinite(number))
+    throw std::invalid_argument("Scenario field must be finite");
+  return number;
+}
+uint32_t scenario_integer(const json &value, const char *key, uint32_t maximum) {
+  const auto &number = value.at(key);
+  if (!number.is_number_integer() || number.get<double>() < 0 || number.get<double>() > maximum)
+    throw std::invalid_argument("Scenario window integer out of bounds");
+  return number.get<uint32_t>();
+}
+ScenarioWindow scenario_window(const json &value) {
+  return {scenario_integer(value, "start_frame", 179999),
+          scenario_integer(value, "frame_count", 180000)};
+}
+bool scenario_active(const ScenarioWindow &window, uint64_t sequence) {
+  return sequence >= window.start_frame &&
+         sequence < uint64_t(window.start_frame) + window.frame_count;
+}
+ScenarioOverrides parse_scenario(const json &value) {
+  scenario_keys(value, {"schema_version", "motion", "occlusion", "false_burst", "high_noise"},
+                {"schema_version"});
+  if (!value.at("schema_version").is_number_integer() || value.at("schema_version") != 1)
+    throw std::invalid_argument("Unsupported scenario override version");
+  ScenarioOverrides result;
+  if (value.contains("motion")) {
+    const auto &m = value.at("motion");
+    scenario_keys(m, {"mode", "stationary_s", "linear_s", "turn_rate_rad_s"},
+                  {"mode", "stationary_s", "linear_s", "turn_rate_rad_s"});
+    if (!m.at("mode").is_string())
+      throw std::invalid_argument("Motion mode must be a string");
+    result.motion =
+        ScenarioMotion{m.at("mode").get<std::string>(), scenario_number(m, "stationary_s"),
+                       scenario_number(m, "linear_s"), scenario_number(m, "turn_rate_rad_s")};
+  }
+  if (value.contains("occlusion")) {
+    const auto &w = value.at("occlusion");
+    scenario_keys(w, {"start_frame", "frame_count"}, {"start_frame", "frame_count"});
+    result.occlusion = scenario_window(w);
+  }
+  if (value.contains("false_burst")) {
+    const auto &w = value.at("false_burst");
+    scenario_keys(w, {"start_frame", "frame_count", "false_rate"},
+                  {"start_frame", "frame_count", "false_rate"});
+    result.false_burst = ScenarioFalseBurst{scenario_window(w), scenario_number(w, "false_rate")};
+  }
+  if (value.contains("high_noise")) {
+    const auto &w = value.at("high_noise");
+    scenario_keys(w, {"start_frame", "frame_count", "noise_m"},
+                  {"start_frame", "frame_count", "noise_m"});
+    result.high_noise = ScenarioHighNoise{scenario_window(w), scenario_number(w, "noise_m")};
+  }
+  return result;
+}
+json serialize_scenario(const ScenarioOverrides &value) {
+  json result = {{"schema_version", value.version}};
+  if (value.motion) {
+    const auto &m = *value.motion;
+    result["motion"] = {{"mode", m.mode},
+                        {"stationary_s", m.stationary_s},
+                        {"linear_s", m.linear_s},
+                        {"turn_rate_rad_s", m.turn_rate_rad_s}};
+  }
+  if (value.occlusion) {
+    const auto &w = *value.occlusion;
+    result["occlusion"] = {{"start_frame", w.start_frame}, {"frame_count", w.frame_count}};
+  }
+  if (value.false_burst) {
+    const auto &w = *value.false_burst;
+    result["false_burst"] = {{"start_frame", w.start_frame},
+                             {"frame_count", w.frame_count},
+                             {"false_rate", w.false_rate}};
+  }
+  if (value.high_noise) {
+    const auto &w = *value.high_noise;
+    result["high_noise"] = {
+        {"start_frame", w.start_frame}, {"frame_count", w.frame_count}, {"noise_m", w.noise_m}};
+  }
+  return result;
+}
+} // namespace
 void Config::validate() const {
   if (executor != "single_thread" && executor != "staged_threads")
     throw std::invalid_argument("Executor must be single_thread or staged_threads");
@@ -39,28 +135,65 @@ void Config::validate() const {
     throw std::invalid_argument("Invalid CA-CFAR cell sizes or Pfa (1e-6..0.1)");
   if (confirmation_hits < 1 || confirmation_hits > 20 || coast_frames < 0 || coast_frames > 100)
     throw std::invalid_argument("Invalid track lifecycle thresholds");
+  if (scenario_overrides) {
+    const auto &o = *scenario_overrides;
+    if (o.version != 1 || input != "synthetic_detections")
+      throw std::invalid_argument("Scenario overrides v1 support synthetic_detections only");
+    if (o.motion) {
+      const auto &m = *o.motion;
+      if (m.mode != "stationary_linear_turn" || !std::isfinite(m.stationary_s) ||
+          m.stationary_s < 0 || m.stationary_s > 3600 || !std::isfinite(m.linear_s) ||
+          m.linear_s < 0 || m.linear_s > 3600 || m.stationary_s + m.linear_s > duration_s ||
+          !std::isfinite(m.turn_rate_rad_s) || std::abs(m.turn_rate_rad_s) > .5)
+        throw std::invalid_argument("Invalid stationary/linear/turn scenario phases");
+    }
+    const auto total_frames = static_cast<uint64_t>(std::ceil(duration_s / dt_s));
+    const auto check_window = [&](const ScenarioWindow &w) {
+      if (w.start_frame > 179999 || w.frame_count < 1 || w.frame_count > 180000 ||
+          uint64_t(w.start_frame) + w.frame_count > 180000 ||
+          uint64_t(w.start_frame) + w.frame_count > total_frames)
+        throw std::invalid_argument("Scenario window extends outside the configured run");
+    };
+    if (o.occlusion)
+      check_window(*o.occlusion);
+    if (o.false_burst) {
+      check_window(*o.false_burst);
+      if (!std::isfinite(o.false_burst->false_rate) || o.false_burst->false_rate < 0 ||
+          o.false_burst->false_rate > 10)
+        throw std::invalid_argument("Invalid burst false rate");
+    }
+    if (o.high_noise) {
+      check_window(*o.high_noise);
+      if (!std::isfinite(o.high_noise->noise_m) || o.high_noise->noise_m < .01 ||
+          o.high_noise->noise_m > 20)
+        throw std::invalid_argument("Invalid scenario noise sigma");
+    }
+  }
 }
 json Config::to_json() const {
-  return {{"schema_version", 1},
-          {"executor", executor},
-          {"queue_capacity", queue_capacity},
-          {"scenario", scenario},
-          {"input", input},
-          {"seed", seed},
-          {"objects", objects},
-          {"duration_s", duration_s},
-          {"dt_s", dt_s},
-          {"noise_m", noise_m},
-          {"dropout", dropout},
-          {"false_rate", false_rate},
-          {"fft_size", fft_size},
-          {"chirps", chirps},
-          {"window", window},
-          {"cfar_training", cfar_training},
-          {"cfar_guard", cfar_guard},
-          {"cfar_pfa", cfar_pfa},
-          {"confirmation_hits", confirmation_hits},
-          {"coast_frames", coast_frames}};
+  json result = {{"schema_version", 1},
+                 {"executor", executor},
+                 {"queue_capacity", queue_capacity},
+                 {"scenario", scenario},
+                 {"input", input},
+                 {"seed", seed},
+                 {"objects", objects},
+                 {"duration_s", duration_s},
+                 {"dt_s", dt_s},
+                 {"noise_m", noise_m},
+                 {"dropout", dropout},
+                 {"false_rate", false_rate},
+                 {"fft_size", fft_size},
+                 {"chirps", chirps},
+                 {"window", window},
+                 {"cfar_training", cfar_training},
+                 {"cfar_guard", cfar_guard},
+                 {"cfar_pfa", cfar_pfa},
+                 {"confirmation_hits", confirmation_hits},
+                 {"coast_frames", coast_frames}};
+  if (scenario_overrides)
+    result["scenario_overrides"] = serialize_scenario(*scenario_overrides);
+  return result;
 }
 Config Config::from_json(const json &j) {
   if (!j.is_object())
@@ -80,6 +213,7 @@ Config Config::from_json(const json &j) {
       (j.at("seed").get<double>() < 0 || j.at("seed").get<double>() > 4294967295.))
     throw std::invalid_argument("Seed must be an unsigned 32-bit integer");
   auto allowed = c.to_json();
+  allowed["scenario_overrides"] = json::object();
   for (auto it = j.begin(); it != j.end(); ++it)
     if (!allowed.contains(it.key()))
       throw std::invalid_argument("Unknown configuration field: " + it.key());
@@ -107,6 +241,8 @@ Config Config::from_json(const json &j) {
   FIELD(cfar_pfa);
   FIELD(confirmation_hits);
   FIELD(coast_frames);
+  if (j.contains("scenario_overrides"))
+    c.scenario_overrides = parse_scenario(j.at("scenario_overrides"));
 #undef FIELD
   c.validate();
   return c;
@@ -126,6 +262,8 @@ std::string fingerprint(std::string_view s) {
   return o.str();
 }
 std::vector<Truth> truth_at(const Config &c, double t) {
+  if (!std::isfinite(t) || t < 0 || t > 3600)
+    throw std::invalid_argument("Invalid scenario source time");
   std::vector<Truth> out;
   for (int k = 0; k < c.objects; ++k) {
     double x = -25. + k * 18., y = 35. + (k % 3) * 12., vx = k % 2 ? -1.1 : 1.2,
@@ -135,25 +273,79 @@ std::vector<Truth> truth_at(const Config &c, double t) {
       y = 45;
       vx = vy = 0;
     }
-    out.push_back({k + 1, x + vx * t, y + vy * t, vx, vy});
+    // The existing scenario supplies the initial position and nominal velocity.
+    // In particular single_stationary has zero nominal velocity in every phase.
+    if (c.scenario_overrides && c.scenario_overrides->motion) {
+      const auto &m = *c.scenario_overrides->motion;
+      if (t < m.stationary_s) {
+        vx = vy = 0;
+      } else if (t < m.stationary_s + m.linear_s) {
+        const auto elapsed = t - m.stationary_s;
+        x += vx * elapsed;
+        y += vy * elapsed;
+      } else {
+        x += vx * m.linear_s;
+        y += vy * m.linear_s;
+        const auto elapsed = t - m.stationary_s - m.linear_s, rate = m.turn_rate_rad_s;
+        if (rate == 0) {
+          x += vx * elapsed;
+          y += vy * elapsed;
+        } else {
+          const auto angle = rate * elapsed, sine = std::sin(angle), cosine = std::cos(angle);
+          // Ratios use the angle, not tiny rate, preserving the linear limit even
+          // when rate is subnormal. The half-angle identity avoids 1-cos loss.
+          const auto half_angle = angle / 2;
+          const auto sinc = angle == 0 ? 1. : sine / angle;
+          const auto half_sinc = half_angle == 0 ? 1. : std::sin(half_angle) / half_angle;
+          const auto along = elapsed * sinc;
+          const auto across = elapsed * half_angle * half_sinc * half_sinc;
+          x += vx * along - vy * across;
+          y += vx * across + vy * along;
+          const auto rotated_x = vx * cosine - vy * sine;
+          vy = vx * sine + vy * cosine;
+          vx = rotated_x;
+        }
+      }
+      out.push_back({k + 1, x, y, vx, vy});
+    } else
+      out.push_back({k + 1, x + vx * t, y + vy * t, vx, vy});
   }
   return out;
 }
 std::vector<Detection> simulate_detections(const Config &c, std::span<const Truth> truth,
                                            Random &rng, uint64_t seq) {
+  // Check the complete truth batch before drawing any noise. Radial velocity at
+  // the exact sensor origin is undefined, so reject rather than inventing zero.
+  for (const auto &t : truth) {
+    const auto radius = std::hypot(t.x, t.y);
+    if (!std::isfinite(t.x) || !std::isfinite(t.y) || !std::isfinite(t.vx) ||
+        !std::isfinite(t.vy) || !std::isfinite(radius) || radius <= 0 ||
+        !std::isfinite((t.x * t.vx + t.y * t.vy) / radius))
+      throw std::invalid_argument("Undefined or nonfinite truth radial geometry");
+  }
   std::vector<Detection> out;
   uint64_t id = seq * 128;
   double noise = c.noise_m * (c.scenario == "noise_sweep" ? 1. + (seq % 200) / 50. : 1.);
+  bool occluded = false;
+  double false_rate = c.false_rate;
+  if (c.scenario_overrides) {
+    const auto &o = *c.scenario_overrides;
+    occluded = o.occlusion && scenario_active(*o.occlusion, seq);
+    if (o.high_noise && scenario_active(*o.high_noise, seq))
+      noise = o.high_noise->noise_m;
+    if (o.false_burst && scenario_active(*o.false_burst, seq))
+      false_rate = o.false_burst->false_rate;
+  }
   for (auto &t : truth) {
     if (rng.uniform() < c.dropout ||
-        (c.scenario == "intermittent_observation" && seq % 100 >= 35 && seq % 100 < 50))
+        (c.scenario == "intermittent_observation" && seq % 100 >= 35 && seq % 100 < 50) || occluded)
       continue;
     double x = t.x + noise * rng.normal(), y = t.y + noise * rng.normal();
     out.push_back({++id, x, y, noise * noise, noise * noise, std::hypot(x, y),
                    (t.x * t.vx + t.y * t.vy) / std::hypot(t.x, t.y), 0.95});
   }
   for (int k = 0; k < 10; ++k)
-    if (rng.uniform() < c.false_rate / 10.) {
+    if (rng.uniform() < false_rate / 10.) {
       double x = (rng.uniform() - .5) * 140, y = 10 + rng.uniform() * 100;
       out.push_back({++id, x, y, 4, 4, std::hypot(x, y), 0, 0.3});
     }

@@ -1,4 +1,5 @@
 #include <aethersense/dsp_extensions.hpp>
+#include <aethersense/compute_backend.hpp>
 #include <aethersense/engine.hpp>
 #include <algorithm>
 #include <chrono>
@@ -120,6 +121,21 @@ int main() {
         measure([&] { return checksum(ca_cfar_2d(power, 64, 96, c)); }, power.size());
     measurements["scalar_nested_cfar_float64"] =
         measure([&] { return checksum(nested_cfar(power, 64, 96, c)); }, power.size());
+    json simd_comparison={{"available",native_simd_available()},{"instruction_set",native_simd_instruction_set()}};
+    if(native_simd_available()){
+      auto reference_backend=make_compute_backend("reference_cpu"),simd_backend=make_compute_backend("native_simd");
+      for(size_t length:{size_t{128},size_t{1024},size_t{8192}}){
+        auto samples=input;if(length!=input.size()){samples.resize(length);for(auto &v:samples)v={rng.normal(),rng.normal()};}
+        json pairs=json::array();for(auto v:samples)pairs.push_back({v.real(),v.imag()});
+        auto reference_metric=measure([&]{auto v=samples;reference_backend->fft64(v);return checksum(v);},length);
+        auto simd_metric=measure([&]{auto v=samples;simd_backend->fft64(v);return checksum(v);},length);
+        auto r=samples,v=samples;reference_backend->fft64(r);simd_backend->fft64(v);double error=0;
+        for(size_t i=0;i<length;++i){error=std::max(error,std::abs(r[i]-v[i]));if(std::abs(r[i]-v[i])>1e-8*std::max(1.,std::abs(r[i])))throw std::runtime_error("SIMD benchmark parity failure");}
+        simd_comparison["workloads"]["N"+std::to_string(length)]={{"samples",length},{"item_unit","complex samples"},{"input_fingerprint",fingerprint(pairs.dump())},
+          {"reference_cpu",reference_metric},{"native_simd",simd_metric},{"max_complex_error",error},{"parity_relative_or_absolute_tolerance",1e-8},
+          {"p50_speedup_reference_over_simd",reference_metric["p50_us"].get<double>()/simd_metric["p50_us"].get<double>()}};
+      }
+    }
     auto reference = direct_dft(input), actual = input;
     fft_float64(actual);
     std::vector<std::complex<float>> f(input.begin(), input.end());
@@ -140,7 +156,7 @@ int main() {
       throw std::runtime_error("uname failed");
     json results = {
         {"schema_version", 1},
-        {"benchmark", "cpu_dsp_baseline"},
+        {"benchmark", "cpu_dsp_and_native_simd_baseline"},
         {"clock", "steady_clock"},
         {"host", {{"os", host.sysname}, {"release", host.release}, {"architecture", host.machine}}},
         {"compiler", __VERSION__},
@@ -169,10 +185,11 @@ int main() {
           {"fft_item_unit", "complex samples"},
           {"cfar_item_unit", "grid cells including skipped edges"}}},
         {"notes",
-         {"cold means first workload invocation in this process; caches are not flushed and "
-          "process startup is excluded",
+         {"cold_us is first measured call of each declared workload; shared kernels may already "
+          "be warm; caches are not flushed and process startup is excluded",
           "per-call allocation and input copying included; allocation count not measured",
           "single-thread software workload; not real-time scheduling or end-to-end service SLA"}}};
+    results["native_simd_comparison"] = std::move(simd_comparison);
     results["measurements"] = std::move(measurements);
     std::cout << results.dump(2) << '\n';
     return 0;

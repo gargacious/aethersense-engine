@@ -21,6 +21,8 @@ std::vector<double> ReferenceCpuBackend::ca_cfar_2d(std::span<const double> inpu
 std::unique_ptr<IComputeBackend> make_compute_backend(std::string_view name) {
   if (name == "reference_cpu")
     return std::make_unique<ReferenceCpuBackend>();
+  if (name == "native_simd" && native_simd_available())
+    return std::make_unique<NativeSimdBackend>();
   throw std::invalid_argument("Unknown or unavailable compute backend");
 }
 } // namespace aether

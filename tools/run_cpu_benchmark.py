@@ -20,7 +20,8 @@ def main():
         parser.error('--runs must be between 1 and 10')
     root = Path(__file__).resolve().parents[1]
     flags = ['-std=c++20', '-O3', '-DNDEBUG', '-Wall', '-Wextra', '-Wpedantic', '-Werror']
-    sources = ['src/engine.cpp', 'src/dsp_extensions.cpp', 'apps/benchmark.cpp']
+    sources = ['src/engine.cpp', 'src/dsp_extensions.cpp', 'src/compute_backend.cpp', 'src/native_simd.cpp', 'apps/benchmark.cpp']
+    hashed_files = sources + ['include/aethersense/compute_backend.hpp', 'include/aethersense/dsp_extensions.hpp', 'include/aethersense/engine.hpp', 'tools/run_cpu_benchmark.py']
     compiler = subprocess.run([args.compiler, '--version'], check=True, text=True, capture_output=True).stdout
     with tempfile.TemporaryDirectory(prefix='aethersense-cpu-benchmark-') as directory:
         executable = Path(directory) / 'cpu-benchmark'
@@ -41,7 +42,7 @@ def main():
                                 'python': platform.python_version(), 'compiler': compiler},
                 'source_revision': revision, 'source_state': 'content hashes identify possible uncommitted sources',
                 'build_flags': flags, 'source_sha256': {
-                    source: hashlib.sha256((root / source).read_bytes()).hexdigest() for source in sources},
+                    source: hashlib.sha256((root / source).read_bytes()).hexdigest() for source in hashed_files},
                 'runs': runs}
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(document, indent=2) + '\n')
@@ -50,6 +51,12 @@ def main():
         for name, metric in run['measurements'].items():
             print(f"  {name}: p50={metric['p50_us']:.3f} us p99={metric['p99_us']:.3f} us "
                   f"throughput={metric['throughput_items_per_s']:.1f} items/s")
+        comparison = run.get('native_simd_comparison', {})
+        print('  native_simd available:', comparison.get('available'), 'ISA:', comparison.get('instruction_set'))
+        for shape, workload in comparison.get('workloads', {}).items():
+            print(f"    {shape}: reference p50={workload['reference_cpu']['p50_us']:.3f} us "
+                  f"SIMD p50={workload['native_simd']['p50_us']:.3f} us "
+                  f"ratio={workload['p50_speedup_reference_over_simd']:.3f} parity_error={workload['max_complex_error']:.3g}")
     print('saved', args.output.resolve())
 
 if __name__ == '__main__':

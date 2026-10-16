@@ -32,6 +32,21 @@ public:
   std::vector<double> ca_cfar_2d(std::span<const double>, std::size_t rows, std::size_t columns,
                                  const Cfar2DConfig &) const override;
 };
+// Compile-target capability only: ARM64 NEON or x86-64 SSE2. Unsupported targets
+// reject explicit selection; no scalar fallback is labeled SIMD.
+bool native_simd_available() noexcept;
+std::string_view native_simd_instruction_set() noexcept;
+class NativeSimdBackend final : public IComputeBackend {
+public:
+  NativeSimdBackend();
+  std::string_view name() const noexcept override { return "native_simd"; }
+  bool supports(ComputePrecision) const noexcept override;
+  ComputeCapabilities capabilities() const noexcept override;
+  void fft32(std::span<std::complex<float>>, bool inverse = false) const override;
+  void fft64(std::span<std::complex<double>>, bool inverse = false) const override;
+  std::vector<double> ca_cfar_2d(std::span<const double>, std::size_t rows,
+                                std::size_t columns, const Cfar2DConfig &) const override;
+};
 // Exact, explicit local selection; unknown/unavailable backend names reject.
 std::unique_ptr<IComputeBackend> make_compute_backend(std::string_view name);
 } // namespace aether

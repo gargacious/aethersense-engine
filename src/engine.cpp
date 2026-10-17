@@ -4,8 +4,8 @@
 #include <iomanip>
 #include <limits>
 #include <numbers>
-#include <sstream>
 #include <set>
+#include <sstream>
 #include <stdexcept>
 #include <tuple>
 
@@ -141,11 +141,12 @@ void Config::validate() const {
     throw std::invalid_argument("Invalid CA-CFAR cell sizes or Pfa (1e-6..0.1)");
   if (confirmation_hits < 1 || confirmation_hits > 20 || coast_frames < 0 || coast_frames > 100)
     throw std::invalid_argument("Invalid track lifecycle thresholds");
-  if (tracking_diagnostics && (tracking_diagnostics->version != 1 || !tracking_diagnostics->enabled))
+  if (tracking_diagnostics &&
+      (tracking_diagnostics->version != 1 || !tracking_diagnostics->enabled))
     throw std::invalid_argument("Tracking diagnostics require version1 and enabled true");
-  if (recording_options && (recording_options->version != 1 ||
-      recording_options->mode != "async_worker" || recording_options->queue_capacity < 1 ||
-      recording_options->queue_capacity > 8))
+  if (recording_options &&
+      (recording_options->version != 1 || recording_options->mode != "async_worker" ||
+       recording_options->queue_capacity < 1 || recording_options->queue_capacity > 8))
     throw std::invalid_argument("Invalid recording options version/mode/capacity");
   if (iq_processing) {
     if (input != "synthetic_iq")
@@ -213,11 +214,14 @@ json Config::to_json() const {
   if (iq_processing)
     result["iq_processing"] = iq_processing->to_json();
   if (tracking_diagnostics)
-    result["tracking_diagnostics"]={{"schema_version",tracking_diagnostics->version},{"enabled",tracking_diagnostics->enabled}};
+    result["tracking_diagnostics"] = {{"schema_version", tracking_diagnostics->version},
+                                      {"enabled", tracking_diagnostics->enabled}};
   if (recording_options)
-    result["recording_options"] = {{"schema_version",recording_options->version},
-      {"mode",recording_options->mode},{"queue_capacity",recording_options->queue_capacity}};
-  if (source_options) result["source_options"] = source_options->to_json();
+    result["recording_options"] = {{"schema_version", recording_options->version},
+                                   {"mode", recording_options->mode},
+                                   {"queue_capacity", recording_options->queue_capacity}};
+  if (source_options)
+    result["source_options"] = source_options->to_json();
   return result;
 }
 Config Config::from_json(const json &j) {
@@ -275,23 +279,27 @@ Config Config::from_json(const json &j) {
   if (j.contains("iq_processing"))
     c.iq_processing = IQProcessingConfig::from_json(j.at("iq_processing"));
   if (j.contains("tracking_diagnostics")) {
-    const auto &d=j.at("tracking_diagnostics");
-    scenario_keys(d,{"schema_version","enabled"},{"schema_version","enabled"});
+    const auto &d = j.at("tracking_diagnostics");
+    scenario_keys(d, {"schema_version", "enabled"}, {"schema_version", "enabled"});
     if (!d.at("enabled").is_boolean() || d.at("enabled") != true)
       throw std::invalid_argument("Tracking diagnostics enabled must be true");
     TrackingDiagnosticsOptions options;
-    options.version=static_cast<int>(scenario_integer(d,"schema_version",1));
-    c.tracking_diagnostics=options;
+    options.version = static_cast<int>(scenario_integer(d, "schema_version", 1));
+    c.tracking_diagnostics = options;
   }
-  if (j.contains("source_options")) c.source_options = SourceOptions::from_json(j.at("source_options"));
+  if (j.contains("source_options"))
+    c.source_options = SourceOptions::from_json(j.at("source_options"));
   if (j.contains("recording_options")) {
-    const auto &r=j.at("recording_options");
-    scenario_keys(r,{"schema_version","mode","queue_capacity"},{"schema_version","mode","queue_capacity"});
+    const auto &r = j.at("recording_options");
+    scenario_keys(r, {"schema_version", "mode", "queue_capacity"},
+                  {"schema_version", "mode", "queue_capacity"});
     RecordingOptions o;
-    o.version=static_cast<int>(scenario_integer(r,"schema_version",1));
-    o.queue_capacity=static_cast<int>(scenario_integer(r,"queue_capacity",8));
-    if (!r.at("mode").is_string()) throw std::invalid_argument("Recording mode must be a string");
-    o.mode=r.at("mode").get<std::string>();c.recording_options=std::move(o);
+    o.version = static_cast<int>(scenario_integer(r, "schema_version", 1));
+    o.queue_capacity = static_cast<int>(scenario_integer(r, "queue_capacity", 8));
+    if (!r.at("mode").is_string())
+      throw std::invalid_argument("Recording mode must be a string");
+    o.mode = r.at("mode").get<std::string>();
+    c.recording_options = std::move(o);
   }
 #undef FIELD
   c.validate();
@@ -515,8 +523,8 @@ std::vector<std::complex<double>> matched_filter(std::span<const std::complex<do
   return out;
 }
 std::vector<double> ca_cfar(std::span<const double> p, int training, int guard, double pfa) {
-  if (training < 1 || guard < 0 || !std::isfinite(pfa) || pfa <= 0 || pfa >= 1 ||
-      p.empty() || p.size() > standalone_cfar_max_elements)
+  if (training < 1 || guard < 0 || !std::isfinite(pfa) || pfa <= 0 || pfa >= 1 || p.empty() ||
+      p.size() > standalone_cfar_max_elements)
     throw std::invalid_argument("Invalid CFAR configuration");
   const auto training_size = static_cast<std::size_t>(training);
   const auto guard_size = static_cast<std::size_t>(guard);
@@ -550,25 +558,27 @@ std::vector<double> ca_cfar(std::span<const double> p, int training, int guard, 
 }
 json SignalResult::to_json() const {
   json result = {{"schema_version", 1},
-          {"samples", bins},
-          {"chirps", chirps},
-          {"range_bin_m", range_bin_m},
-          {"velocity_bin_mps", velocity_bin_mps},
-          {"sample_rate_hz", sample_rate_hz},
-          {"chirp_period_s", chirp_period_s},
-          {"i", i},
-          {"q", q},
-          {"spectrum", spectrum},
-          {"phase", phase},
-          {"range_profile_power", range_profile},
-          {"threshold_power", threshold},
-          {"range_doppler_power", range_doppler},
-          {"normalization",
-           "DC removed; window coherent-gain corrected; FFT/N; power=|complex amplitude|^2"},
-          {"cfar_edge_policy", "skip; threshold -1 means unavailable"},
-          {"provenance", "SIMULATED educational FMCW; two calibrated half-wavelength ULA channels; "
-                         "uncalibrated model"}};
-  if (processing) result["processing"] = processing->to_json();
+                 {"samples", bins},
+                 {"chirps", chirps},
+                 {"range_bin_m", range_bin_m},
+                 {"velocity_bin_mps", velocity_bin_mps},
+                 {"sample_rate_hz", sample_rate_hz},
+                 {"chirp_period_s", chirp_period_s},
+                 {"i", i},
+                 {"q", q},
+                 {"spectrum", spectrum},
+                 {"phase", phase},
+                 {"range_profile_power", range_profile},
+                 {"threshold_power", threshold},
+                 {"range_doppler_power", range_doppler},
+                 {"normalization",
+                  "DC removed; window coherent-gain corrected; FFT/N; power=|complex amplitude|^2"},
+                 {"cfar_edge_policy", "skip; threshold -1 means unavailable"},
+                 {"provenance",
+                  "SIMULATED educational FMCW; two calibrated half-wavelength ULA channels; "
+                  "uncalibrated model"}};
+  if (processing)
+    result["processing"] = processing->to_json();
   if (!range_doppler_threshold.empty())
     result["range_doppler_threshold_power"] = range_doppler_threshold;
   return result;

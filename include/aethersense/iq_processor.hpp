@@ -8,6 +8,7 @@ namespace aether {
 class IQProcessor {
   struct Impl;
   std::unique_ptr<Impl> impl_;
+
 public:
   explicit IQProcessor(const Config &);
   ~IQProcessor();

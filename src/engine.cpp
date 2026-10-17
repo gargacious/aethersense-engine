@@ -1,3 +1,4 @@
+#include "tracking_kalman.hpp"
 #include <aethersense/engine.hpp>
 #include <algorithm>
 #include <cmath>
@@ -630,24 +631,7 @@ void Tracker::update(std::span<const Detection> obs, int64_t ns, const Config &c
     throw std::invalid_argument("Invalid tracking time interval");
   previous_ns_ = ns;
   for (auto &t : tracks_) {
-    t.state[0] += dt * t.state[2];
-    t.state[1] += dt * t.state[3];
-    std::array<double, 16> f{1, 0, dt, 0, 0, 1, 0, dt, 0, 0, 1, 0, 0, 0, 0, 1}, fp{}, p{};
-    for (int i = 0; i < 4; ++i)
-      for (int j = 0; j < 4; ++j)
-        for (int k = 0; k < 4; ++k)
-          fp[i * 4 + j] += f[i * 4 + k] * t.covariance[k * 4 + j];
-    for (int i = 0; i < 4; ++i)
-      for (int j = 0; j < 4; ++j)
-        for (int k = 0; k < 4; ++k)
-          p[i * 4 + j] += fp[i * 4 + k] * f[j * 4 + k];
-    for (int axis = 0; axis < 2; ++axis) {
-      p[axis * 4 + axis] += .25 * dt * dt * dt * dt;
-      p[axis * 4 + axis + 2] += .5 * dt * dt * dt;
-      p[(axis + 2) * 4 + axis] += .5 * dt * dt * dt;
-      p[(axis + 2) * 4 + axis + 2] += dt * dt;
-    }
-    t.covariance = p;
+    detail::kalman_predict(t, dt);
     ++t.age;
     ++t.misses;
     t.matched.clear();
@@ -718,33 +702,7 @@ void Tracker::update(std::span<const Detection> obs, int64_t ns, const Config &c
     used_t[cand.t] = used_d[cand.d] = true;
     auto &t = tracks_[cand.t];
     auto &d = obs[cand.d];
-    auto p = t.covariance;
-    double a = p[0] + d.var_x, b = p[1], cc = p[5] + d.var_y, det = a * cc - b * b;
-    std::array<double, 8> k{};
-    for (int i = 0; i < 4; ++i) {
-      k[i * 2] = (p[i * 4] * cc - p[i * 4 + 1] * b) / det;
-      k[i * 2 + 1] = (p[i * 4 + 1] * a - p[i * 4] * b) / det;
-    }
-    double dx = d.x - t.state[0], dy = d.y - t.state[1];
-    for (int i = 0; i < 4; ++i)
-      t.state[i] += k[2 * i] * dx + k[2 * i + 1] * dy;
-    std::array<double, 16> ikh{}, tmp{}, updated{};
-    for (int i = 0; i < 4; ++i) {
-      ikh[i * 4 + i] = 1;
-      ikh[i * 4] -= k[2 * i];
-      ikh[i * 4 + 1] -= k[2 * i + 1];
-    }
-    for (int i = 0; i < 4; ++i)
-      for (int j = 0; j < 4; ++j)
-        for (int v = 0; v < 4; ++v)
-          tmp[i * 4 + j] += ikh[i * 4 + v] * p[v * 4 + j];
-    for (int i = 0; i < 4; ++i)
-      for (int j = 0; j < 4; ++j) {
-        for (int v = 0; v < 4; ++v)
-          updated[i * 4 + j] += tmp[i * 4 + v] * ikh[j * 4 + v];
-        updated[i * 4 + j] += k[2 * i] * d.var_x * k[2 * j] + k[2 * i + 1] * d.var_y * k[2 * j + 1];
-      }
-    t.covariance = updated;
+    detail::kalman_correct(t, d);
     t.misses = 0;
     ++t.hits;
     t.confirmed = t.confirmed || t.hits >= c.confirmation_hits;

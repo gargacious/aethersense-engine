@@ -39,6 +39,69 @@ int main() {
       bad.fft_size = 63;
       bad.validate();
     });
+    // Multiprocess admission is explicit; unsupported configurations must fail
+    // before spawning, while the established in-process limits stay unchanged.
+    Config multiprocess = c;
+    multiprocess.executor = "multiprocess";
+    multiprocess.queue_capacity = 1;
+    multiprocess.recording_options = RecordingOptions{};
+    multiprocess.fft_size = 256;
+    multiprocess.chirps = 16;
+    for (const char *path : {"synthetic_detections", "synthetic_iq"}) {
+      multiprocess.input = path;
+      multiprocess.validate();
+      check(Config::from_json(multiprocess.to_json()).to_json() == multiprocess.to_json(),
+            "Multiprocess config roundtrip changed explicit settings");
+    }
+    auto missing_recording = multiprocess;
+    missing_recording.recording_options.reset();
+    rejects([&] { missing_recording.validate(); });
+    auto omitted_recording = multiprocess.to_json();
+    omitted_recording.erase("recording_options");
+    rejects([&] { Config::from_json(omitted_recording); });
+    for (int capacity : {0, 2, 8, 64}) {
+      auto invalid = multiprocess;
+      invalid.queue_capacity = capacity;
+      rejects([&] { invalid.validate(); });
+    }
+    auto default_queue = multiprocess.to_json();
+    default_queue.erase("queue_capacity");
+    rejects([&] { Config::from_json(default_queue); });
+    for (int capacity : {0, 9}) {
+      auto invalid = multiprocess;
+      invalid.recording_options->queue_capacity = capacity;
+      rejects([&] { invalid.validate(); });
+    }
+    auto invalid_recording = multiprocess;
+    invalid_recording.recording_options->mode = "synchronous";
+    rejects([&] { invalid_recording.validate(); });
+    invalid_recording = multiprocess;
+    invalid_recording.recording_options->version = 2;
+    rejects([&] { invalid_recording.validate(); });
+    auto paced = multiprocess;
+    paced.source_options = SourceOptions{};
+    rejects([&] { paced.validate(); });
+    for (bool samples : {false, true}) {
+      auto oversized = multiprocess;
+      if (samples) oversized.fft_size = 512;
+      else oversized.chirps = 32;
+      rejects([&] { oversized.validate(); });
+      rejects([&] { Config::from_json(oversized.to_json()); });
+      oversized.input = "synthetic_detections";
+      oversized.validate(); // Inactive IQ dimensions retain their legacy bounds.
+    }
+    for (const char *executor : {"single_thread", "staged_threads"}) {
+      Config legacy = c;
+      legacy.executor = executor;
+      legacy.input = "synthetic_iq";
+      legacy.fft_size = 1024;
+      legacy.chirps = 64;
+      legacy.validate();
+      check(!legacy.recording_options && legacy.queue_capacity == 8,
+            "Legacy defaults were silently converted to multiprocess requirements");
+      check(Config::from_json(legacy.to_json()).to_json() == legacy.to_json(),
+            "Legacy executor maximum dimensions changed");
+    }
     Random r1(42), r2(42);
     for (int i = 0; i < 100; ++i)
       check(r1.normal() == r2.normal(), "Seeded RNG differs");

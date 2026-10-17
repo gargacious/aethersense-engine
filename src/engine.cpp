@@ -113,8 +113,15 @@ void Config::validate() const {
     if (executor != "staged_threads")
       throw std::invalid_argument("Independently paced source requires staged_threads");
   }
-  if (executor != "single_thread" && executor != "staged_threads")
-    throw std::invalid_argument("Executor must be single_thread or staged_threads");
+  if (executor != "single_thread" && executor != "staged_threads" && executor != "multiprocess")
+    throw std::invalid_argument("Executor must be single_thread, staged_threads or multiprocess");
+  if (executor == "multiprocess") {
+    if (queue_capacity != 1 || !recording_options || source_options)
+      throw std::invalid_argument(
+          "Multiprocess requires one in-flight slot, async recording options and no source pacing");
+    if (input == "synthetic_iq" && (fft_size > 256 || chirps > 16))
+      throw std::invalid_argument("Multiprocess IQ supports fft_size <= 256 and chirps <= 16");
+  }
   if (queue_capacity < 1 || queue_capacity > 64)
     throw std::invalid_argument("Queue capacity must be 1..64");
   if (scenario != "single_stationary" && scenario != "crossing_paths" &&

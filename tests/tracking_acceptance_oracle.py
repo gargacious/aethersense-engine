@@ -23,6 +23,9 @@ def inverse(matrix):
 def main():
     result = subprocess.run([sys.argv[1], '--oracle'], check=True, text=True, capture_output=True)
     report = json.loads(result.stdout)
+    assert report['schema_version'] == 2
+    assert 'final_associated_position_rmse_all_seeds_m' not in report
+    assert 'mean_confirmation_delay_s' not in report
     nees, position_error, maximum_error = [], 0., 0.
     for sample in report.pop('records'):
         covariance = [sample['covariance'][i:i + 4] for i in range(0, 16, 4)]
@@ -42,7 +45,7 @@ def main():
     report['limitations'] = ['NEES/RMSE conditional on original-track survival',
                              'deterministic CV truth has no acceleration process noise',
                              'gating/association and survival selection prevent chi-square calibration claims',
-                             'crossing identity switches observed; no retention or identity acceptance claim']
+                             'separate SW16a deterministic regression limits are not physical accuracy claims']
     print(json.dumps(report, indent=2))
 
 if __name__ == '__main__':

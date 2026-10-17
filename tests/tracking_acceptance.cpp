@@ -47,7 +47,16 @@ void one_to_one(const Tracker &t) {
       require(ids.insert(id).second, "Observation matched multiple tracks");
   }
 }
-json crossing(uint32_t seed) {
+json compact_frame(int frame, const Tracker &tracker) {
+  require(tracker.tracks().size() <= 8, "Regression fixture exceeds eight tracks per frame");
+  json tracks = json::array();
+  for (const auto &track : tracker.tracks())
+    tracks.push_back({{"track_id", track.id},
+                      {"confirmed", track.confirmed},
+                      {"matched_observation_ids", track.matched}});
+  return {{"frame_index", frame}, {"tracks", std::move(tracks)}};
+}
+json crossing(uint32_t seed, json *compact_frames = nullptr) {
   Config c;
   c.confirmation_hits = 3;
   c.coast_frames = 5;
@@ -84,6 +93,8 @@ json crossing(uint32_t seed) {
       }
     }
     frames.push_back(tracks);
+    if (compact_frames)
+      compact_frames->push_back(compact_frame(frame, tracker));
   }
   for (const auto &[id, count] : counts) {
     (void)id;
@@ -173,6 +184,7 @@ int main(int argc, char **argv) {
       std::cout << cascade.dump(2) << '\n';
       return 0;
     }
+    const bool regression_fixture = argc == 2 && std::string(argv[1]) == "--regression-fixture";
     Config c;
     c.objects = 1;
     c.confirmation_hits = 3;
@@ -183,13 +195,16 @@ int main(int argc, char **argv) {
     constexpr int seeds = 256, frames = 160;
     double sum_nees = 0, sum_position_error = 0;
     size_t completed = 0, lost = 0, confirmed_delay = 0, psd_checks = 0, identity_transitions = 0,
-           confirmed_covered = 0, coverage_frames = 0, replacements = 0;
+           confirmed_covered = 0, coverage_frames = 0, replacements = 0, final_associated = 0,
+           original_confirmed = 0;
     double all_position_error = 0;
     std::vector<double> final_nees;
-    json records = json::array();
+    json records = json::array(), trials = json::array();
     for (int seed = 0; seed < seeds; ++seed) {
       Random random(9000 + seed);
       Tracker tracker;
+      json trial_frames = json::array(), final_tracks = json::array();
+      std::array<double, 4> final_truth{};
       int first_confirmation = -1;
       uint64_t previous_associated = 0;
       for (int frame = 0; frame < frames; ++frame) {
@@ -201,6 +216,14 @@ int main(int argc, char **argv) {
                                              truth[1] + .5 * random.normal(), .25, .25}};
         tracker.update(observations, frame * 100000000LL, c);
         one_to_one(tracker);
+        if (regression_fixture) {
+          trial_frames.push_back(compact_frame(frame, tracker));
+          if (frame == frames - 1) {
+            final_truth = truth;
+            for (const auto &track : tracker.tracks())
+              final_tracks.push_back(serialize(track));
+          }
+        }
         for (const auto &t : tracker.tracks()) {
           nees(t, truth);
           ++psd_checks;
@@ -220,6 +243,7 @@ int main(int argc, char **argv) {
             if (frame == frames - 1) {
               double dx = t.state[0] - truth[0], dy = t.state[1] - truth[1];
               all_position_error += dx * dx + dy * dy;
+              ++final_associated;
             }
           }
         if (frame == frames - 1) {
@@ -245,8 +269,15 @@ int main(int argc, char **argv) {
                              {"nees", value}});
         }
       }
-      if (first_confirmation >= 0)
+      if (first_confirmation >= 0) {
         confirmed_delay += first_confirmation;
+        ++original_confirmed;
+      }
+      if (regression_fixture)
+        trials.push_back({{"seed", 9000 + seed},
+                          {"frames", std::move(trial_frames)},
+                          {"final_truth", final_truth},
+                          {"final_tracks", std::move(final_tracks)}});
     }
     require(completed > 0, "No original tracks survived for conditional NEES evaluation");
     double mean = sum_nees / completed;
@@ -282,10 +313,11 @@ int main(int argc, char **argv) {
     require(tentative.tracks().size() == 1, "Tentative premature deletion");
     tentative.update({}, 200000000, c);
     require(tentative.tracks().empty(), "Tentative loss not deleted");
-    auto cross = crossing(456);
+    json crossing_frames = json::array();
+    auto cross = crossing(456, regression_fixture ? &crossing_frames : nullptr);
     require(cross.dump() == crossing(456).dump(), "Crossing association not deterministic");
     json report = {
-        {"schema_version", 1},
+        {"schema_version", 2},
         {"status", "PASS_WITH_LIMITATIONS"},
         {"scenario", "no-dropout known constant velocity; Gaussian sigma0.5m"},
         {"seeds", seeds},
@@ -295,14 +327,26 @@ int main(int argc, char **argv) {
         {"lost_original_with_final_confirmed_replacement", replacements},
         {"observation_track_identity_transitions", identity_transitions},
         {"confirmed_observation_coverage_after_warmup",
-         static_cast<double>(confirmed_covered) / coverage_frames},
-        {"final_associated_position_rmse_all_seeds_m", std::sqrt(all_position_error / seeds)},
+         coverage_frames ? json(static_cast<double>(confirmed_covered) / coverage_frames)
+                         : json(nullptr)},
+        {"eligible_post_warmup_frames", seeds * (frames - 2)},
+        {"associated_post_warmup_frames", coverage_frames},
+        {"confirmed_associated_post_warmup_frames", confirmed_covered},
+        {"confirmed_coverage_all_eligible_frames",
+         static_cast<double>(confirmed_covered) / (seeds * (frames - 2))},
+        {"final_associated_count", final_associated},
+        {"final_unassociated_count", seeds - final_associated},
+        {"final_associated_position_rmse_m",
+         final_associated ? json(std::sqrt(all_position_error / final_associated)) : json(nullptr)},
         {"covariance_cholesky_checks", psd_checks},
         {"final_state_mean_nees", mean},
         {"final_nees_p50", quantile(.5)},
         {"final_nees_p95", quantile(.95)},
         {"final_position_rmse_m", std::sqrt(sum_position_error / completed)},
-        {"mean_confirmation_delay_s", .1 * confirmed_delay / seeds},
+        {"original_confirmed_count", original_confirmed},
+        {"original_never_confirmed_count", seeds - original_confirmed},
+        {"mean_original_confirmation_delay_s",
+         original_confirmed ? json(.1 * confirmed_delay / original_confirmed) : json(nullptr)},
         {"nees_test_bounds", {.1, 6.}},
         {"nees_interpretation", "conditional on original-track survival; conservative "
                                 "deterministic CV model; not chi-square calibration acceptance"},
@@ -315,7 +359,17 @@ int main(int argc, char **argv) {
                       "miss delete; reacquire identity preserved"}};
     if (argc == 2 && std::string(argv[1]) == "--oracle")
       report["records"] = records;
-    std::cout << report.dump(2) << '\n';
+    if (regression_fixture) {
+      report["regression_fixture"] = {
+          {"schema_version", 1},
+          {"profile", "cv_tracking_regression_v1"},
+          {"trials", std::move(trials)},
+          {"crossing", {{"seed", 456}, {"frames", std::move(crossing_frames)}}}};
+      const auto serialized = report.dump();
+      require(serialized.size() <= 16 * 1024 * 1024, "Regression fixture exceeds 16 MiB");
+      std::cout << serialized << '\n';
+    } else
+      std::cout << report.dump(2) << '\n';
     return 0;
   } catch (const std::exception &e) {
     std::cerr << "FAIL " << e.what() << '\n';

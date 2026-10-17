@@ -418,6 +418,9 @@ void RawBlock::validate() const {
 }
 RawBlock synthesize_iq(const Config &c, std::span<const Truth> truth, Random &rng,
                        const Envelope &e) {
+  // This public entry point also accepts typed configs, not only parsed ones.
+  // Validate before dimension products, allocation, or consuming the caller's RNG.
+  c.validate();
   RawBlock b;
   b.envelope = e;
   b.samples_per_chirp = c.fft_size;

@@ -2,6 +2,7 @@
 #include <aethersense/engine.hpp>
 #include <cmath>
 #include <iostream>
+#include <limits>
 #include <numbers>
 #include <stdexcept>
 using namespace aether;
@@ -67,6 +68,36 @@ int main() {
     Random r(42);
     Envelope e;
     auto truth = truth_at(c, 0);
+    // Public synthesis validates dimensions before signed products, allocation,
+    // or RNG consumption, including callers that bypass Config::from_json.
+    for (bool samples : {true, false}) {
+      for (int invalid : {0, -1, std::numeric_limits<int>::min(),
+                          std::numeric_limits<int>::max(), samples ? 2048 : 128}) {
+        Config invalid_config = c;
+        (samples ? invalid_config.fft_size : invalid_config.chirps) = invalid;
+        Random attempted(71), untouched(71);
+        bool rejected = false;
+        try {
+          (void)synthesize_iq(invalid_config, truth, attempted, e);
+        } catch (const std::invalid_argument &) {
+          rejected = true;
+        }
+        check(rejected, "Synthesis must reject invalid dimensions before arithmetic");
+        check(attempted.normal() == untouched.normal(), "Rejected synthesis consumed RNG");
+      }
+    }
+    for (const auto dimensions : {std::pair{32, 8}, std::pair{1024, 64}}) {
+      Config boundary = c;
+      boundary.fft_size = dimensions.first;
+      boundary.chirps = dimensions.second;
+      Random first(72), second(72);
+      auto block = synthesize_iq(boundary, truth, first, e);
+      auto repeat = synthesize_iq(boundary, truth, second, e);
+      block.validate();
+      check(block.iq.size() == std::size_t{2} * dimensions.first * dimensions.second,
+            "Boundary synthesis shape");
+      check(block.iq == repeat.iq, "Boundary synthesis seed determinism");
+    }
     auto raw = synthesize_iq(c, truth, r, e);
     raw.validate();
     auto result = process_iq(raw, c);
